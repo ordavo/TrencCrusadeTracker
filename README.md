@@ -125,3 +125,7 @@ Los reglamentos digitales en PDF, paquetes de escenarios, FAQs y especificacione
 ---
 
 *Desarrollado con el apoyo de Asistencia de Inteligencia Artificial para Trench Crusade.*
+=======
+# TrencCrusadeTracker
+Sistema desarrollado para practicar kotlin, programacion con agentes de IA para el juego trench crusade
+
