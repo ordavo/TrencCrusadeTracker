@@ -1,6 +1,7 @@
 package com.example.trenchcrusadetracker
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,9 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.trenchcrusadetracker.ui.screens.home.HomeScreen
+import com.example.trenchcrusadetracker.ui.screens.warband.WarbandCreationScreen
 import com.example.trenchcrusadetracker.ui.theme.DarkBackground
 import com.example.trenchcrusadetracker.ui.theme.ParchmentText
 import com.example.trenchcrusadetracker.ui.theme.PrimaryCrimson
@@ -63,6 +66,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +77,7 @@ fun MainApp() {
                     title = {
                         Text(
                             text = when (currentScreen) {
-                                Screen.WARBANDS -> "Huestes de Guerra"
+                                Screen.WARBANDS -> "Creación de Warband"
                                 Screen.GAMES -> "Partidas en Vivo"
                                 Screen.RULES -> "Reglamento y Lore"
                                 Screen.CAMPAIGN -> "Modo Campaña"
@@ -113,10 +117,12 @@ fun MainApp() {
                     onNavigateToCampaign = { currentScreen = Screen.CAMPAIGN },
                     onNavigateToProfile = { currentScreen = Screen.PROFILE }
                 )
-                Screen.WARBANDS -> PlaceholderScreen(
-                    title = "Sección: Huestes de Guerra",
-                    description = "Aquí podrás crear y gestionar tus bandas de guerra.",
-                    onBack = { currentScreen = Screen.HOME }
+                Screen.WARBANDS -> WarbandCreationScreen(
+                    onWarbandSaved = { savedWarband ->
+                        Toast.makeText(context, "Warband '${savedWarband.name}' guardada con éxito!", Toast.LENGTH_SHORT).show()
+                        currentScreen = Screen.HOME
+                    },
+                    onCancel = { currentScreen = Screen.HOME }
                 )
                 Screen.GAMES -> PlaceholderScreen(
                     title = "Sección: Partidas en Vivo",

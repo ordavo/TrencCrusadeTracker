@@ -1,6 +1,7 @@
 package com.example.trenchcrusadetracker.domain.model.warband
 
 import com.example.trenchcrusadetracker.domain.model.equipment.BattlekitCategory
+import com.example.trenchcrusadetracker.domain.model.equipment.BattlekitType
 import com.example.trenchcrusadetracker.domain.model.equipment.Equipment
 
 /**
@@ -12,6 +13,7 @@ import com.example.trenchcrusadetracker.domain.model.equipment.Equipment
  * 5. Shields
  * 6. Equipment
  * 7. Special
+ * Cumple con los límites de Battlekit y restricciones de Escudos del reglamento oficial.
  */
 data class Battlekit(
     val rangedWeapons: List<Equipment> = emptyList(),
@@ -30,9 +32,78 @@ data class Battlekit(
     }
 
     /**
-     * Agrega un elemento de equipamiento automáticamente en su categoría correspondiente.
+     * Valida las restricciones oficiales del reglamento antes de agregar una pieza de Battlekit.
+     */
+    fun canAddEquipment(item: Equipment): Boolean {
+        val all = allEquipment()
+
+        // Regla: No se permiten piezas de equipamiento con el mismo nombre duplicado
+        if (item.type == BattlekitType.EQUIPMENT && all.any { it.name == item.name }) {
+            return false
+        }
+
+        // Regla: Máximo un traje de Armadura
+        if (item.type == BattlekitType.ARMOUR && armour.isNotEmpty()) {
+            return false
+        }
+
+        // Regla: Máximo un tipo de Granada
+        if (item.type == BattlekitType.GRENADE && grenades.isNotEmpty()) {
+            return false
+        }
+
+        // Regla: Máximo un Escudo
+        if (item.type == BattlekitType.SHIELD && shields.isNotEmpty()) {
+            return false
+        }
+
+        val carriesShield = shields.isNotEmpty() || item.type == BattlekitType.SHIELD
+
+        // Restricciones con Escudo
+        if (carriesShield) {
+            // No se pueden llevar armas de 2 Manos salvo que tengan la estipulación Shield Combo
+            if (item.isTwoHanded && !item.keywords.contains("Shield Combo")) {
+                return false
+            }
+            // Máximo una arma de 1 Mano Melee y una de 1 Mano a Distancia
+            if (item.category == BattlekitCategory.MELEE_WEAPONS && meleeWeapons.isNotEmpty()) {
+                return false
+            }
+            if (item.category == BattlekitCategory.RANGED_WEAPONS && rangedWeapons.isNotEmpty()) {
+                return false
+            }
+        } else {
+            // Límites de Armas sin Escudo
+            if (item.category == BattlekitCategory.RANGED_WEAPONS) {
+                val count2H = rangedWeapons.count { it.isTwoHanded }
+                val count1H = rangedWeapons.count { it.isOneHanded }
+                if (item.isTwoHanded && (count2H >= 1 || count1H > 0)) return false
+                if (item.isOneHanded && (count2H >= 1 || count1H >= 2)) return false
+            }
+
+            if (item.category == BattlekitCategory.MELEE_WEAPONS) {
+                val count2H = meleeWeapons.count { it.isTwoHanded }
+                val count1H = meleeWeapons.count { it.isOneHanded }
+                if (item.isTwoHanded && (count2H >= 1 || count1H > 0)) return false
+                if (item.isOneHanded && (count2H >= 1 || count1H >= 2)) return false
+            }
+        }
+
+        // Límite total de manos ocupadas <= 2
+        val currentHands = all.sumOf { it.handsRequired }
+        if (currentHands + item.handsRequired > 2) {
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Agrega un elemento de equipamiento automáticamente en su categoría correspondiente si cumple las restricciones.
      */
     fun addEquipment(item: Equipment): Battlekit {
+        if (!canAddEquipment(item)) return this
+
         return when (item.category) {
             BattlekitCategory.RANGED_WEAPONS -> copy(rangedWeapons = rangedWeapons + item)
             BattlekitCategory.GRENADES -> copy(grenades = grenades + item)

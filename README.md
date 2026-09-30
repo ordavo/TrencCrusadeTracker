@@ -13,9 +13,18 @@
 ## 🚀 Características Principales
 
 ### 1. 🛡️ Gestión de Huestes de Guerra (*Warbands*)
-- Creación de bandas pertenecientes a las distintas facciones oficiales (Nueva Antioquía, Legión Herética, Peregrinos de las Trincheras, Sultanato de Hierro, Procesión de la Afligida Sagrada, etc.).
-- Gestión de integrantes por roles: **Líderes**, **Tropas**, **Élite** y **Mercenarios**.
-- Cálculo automático de costos totales en **Ducados** y **Puntos de Gloria**.
+Soporte para las 9 facciones y bandas oficiales encontradas en los recursos:
+1. **Principality of New Antioch** (Nueva Antioquía)
+2. **Heretic Legion** (Legión Herética)
+3. **Trench Pilgrims** (Peregrinos de las Trincheras)
+4. **Iron Sultanate** (Sultanato de Hierro)
+5. **Procession of the Sacred Affliction** (Procesión de la Afligida Sagrada)
+6. **Prussian Stosstruppen** (Stosstruppen Prusianos)
+7. **Heretic Naval Raiders** (Invasores Navales Heréticos)
+8. **The Red Brigade** (La Brigada Roja)
+9. **The Great Hunger** (El Gran Hambre)
+
+Gestión de integrantes por roles: **Líderes**, **Tropas**, **Élite** y **Mercenarios**. Cálculo automático de costos totales en **Ducados** y **Puntos de Gloria**.
 
 ### 2. 🎒 Battlekit Estructurado en 7 Categorías
 El equipamiento (*Battlekit*) de cada modelo se divide en las 7 categorías oficiales del libro de reglas:
@@ -27,7 +36,7 @@ El equipamiento (*Battlekit*) de cada modelo se divide en las 7 categorías ofic
 6. **Equipment** (*Equipo general*)
 7. **Special** (*Objetos especiales, reliquias y habilidades*)
 
-### 3. 💰 Monedas y Fuertes de Equipamiento
+### 3. 💰 Monedas y Fuentes de Equipamiento
 - Soporte para compras con **Ducados** y **Puntos de Gloria**.
 - Clasificación según la procedencia del objeto:
   - **Standard** (Armería Estándar)
@@ -43,10 +52,6 @@ El equipamiento (*Battlekit*) de cada modelo se divide en las 7 categorías ofic
 - Anotación de Puntos de Victoria (VP).
 - Registro de Muertes Gloriosas (*Glorious Deaths*).
 
-### 6. 👤 Perfil y Reglamento
-- Interfaz de entrada con navegación unificada a las 5 secciones: *Warbands*, *Juegos*, *Reglas*, *Campaña* y *Perfil*.
-- Acceso a las reglas e información técnica.
-
 ---
 
 ## 🎨 Paleta de Colores y Estilo Visual
@@ -60,31 +65,41 @@ La interfaz sigue una estética *grimdark* adecuada para el universo de Trench C
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+## 🏛️ Aplicación de Principios SOLID
 
-El código está estructurado siguiendo los principios de **Clean Architecture** orientada a dominio:
+El diseño de las facciones y modelos sigue estrictamente los principios SOLID:
+
+- **Single Responsibility Principle (SRP)**: Cada proveedor de facción (`FactionProvider`) encapsula únicamente la información, reglas y catálogo de unidades de su facción.
+- **Open/Closed Principle (OCP)**: Nuevas bandas de guerra o expansiones de libros pueden agregarse creando un nuevo `FactionProvider` sin necesidad de modificar el código existente.
+- **Liskov Substitution Principle (LSP)**: Cualquier implementación de `FactionProvider` es intercambiable por el repositorio de facciones.
+- **Interface Segregation Principle (ISP)**: Interfaces segregadas (`FactionRuleProvider` y `UnitRosterProvider`) para desacoplar las reglas de los catálogos de tropas.
+- **Dependency Inversion Principle (DIP)**: Los administradores de campañas y bandas dependen de la interfaz abstracta `FactionRepository`.
+
+---
+
+## 🏗️ Arquitectura del Proyecto
 
 ```
 app/src/main/java/com/example/trenchcrusadetracker/
-├── domain/model/                # Modelos de dominio
-│   ├── equipment/
-│   │   └── Equipment.kt         # Monedas, Fuentes, Categorías del Battlekit y Sealed Class de Equipamiento
-│   ├── warband/
-│   │   ├── Battlekit.kt         # Estructura del kit de combate (7 categorías)
-│   │   ├── WarbandMember.kt     # Superclase abstracta de miniaturas (Leader, Trooper, etc.)
-│   │   └── Warband.kt           # Agregado principal de la banda de guerra
-│   ├── faction/
-│   │   └── Faction.kt           # Facciones y reglas especiales
-│   ├── campaign/
-│   │   ├── CampaignPhase.kt     # Fases de campaña (Barracks, Battle, Finished)
-│   │   ├── Player.kt            # Datos del jugador
-│   │   └── Campaign.kt          # Objeto de campaña
-│   └── game/
-│       ├── Scenario.kt          # Escenarios de batalla
-│       ├── TurnLog.kt           # Registro por turno (VP, Glorious Deaths)
-│       └── GameMatch.kt         # Estado de la partida
+├── domain/
+│   ├── model/                   # Modelos de dominio
+│   │   ├── equipment/
+│   │   │   └── Equipment.kt     # Monedas, Fuentes, Categorías del Battlekit y Sealed Class
+│   │   ├── warband/
+│   │   │   ├── Battlekit.kt     # Kit de combate en 7 categorías
+│   │   │   ├── WarbandMember.kt # Superclase abstracta de miniaturas (Leader, Trooper, etc.)
+│   │   │   └── Warband.kt       # Agregado de la hueste de guerra
+│   │   ├── faction/
+│   │   │   └── Faction.kt       # Facciones y reglas especiales
+│   │   ├── campaign/
+│   │   └── game/
+│   └── faction/                 # Módulo de facciones (SOLID)
+│       ├── FactionRuleProvider.kt
+│       ├── FactionRepository.kt
+│       ├── FactionRepositoryImpl.kt
+│       └── providers/           # Proveedores de las 9 facciones
 ├── ui/
-│   ├── theme/                   # Tema visual y paleta de colores oficial
+│   ├── theme/                   # Tema visual y paleta oficial
 │   └── screens/
 │       └── home/
 │           └── HomeScreen.kt    # Pantalla principal de entrada
@@ -125,7 +140,3 @@ Los reglamentos digitales en PDF, paquetes de escenarios, FAQs y especificacione
 ---
 
 *Desarrollado con el apoyo de Asistencia de Inteligencia Artificial para Trench Crusade.*
-=======
-# TrencCrusadeTracker
-Sistema desarrollado para practicar kotlin, programacion con agentes de IA para el juego trench crusade
-

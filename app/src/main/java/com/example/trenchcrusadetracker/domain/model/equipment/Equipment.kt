@@ -42,7 +42,39 @@ enum class BattlekitCategory {
 }
 
 /**
+ * Tipos oficiales de Battlekit según el reglamento de Trench Crusade.
+ */
+enum class BattlekitType(val displayName: String) {
+    ONE_HANDED("1-Handed"),
+    TWO_HANDED("2-Handed"),
+    GRENADE("Grenade"),
+    ARMOUR("Armour"),
+    SHIELD("Shield"),
+    EQUIPMENT("Equipment"),
+    SPECIAL("Special")
+}
+
+/**
+ * Alcance oficial de una pieza de Battlekit.
+ */
+sealed class WeaponRange {
+    data class Ranged(val inches: Int) : WeaponRange() {
+        override fun toString(): String = "${inches}\""
+    }
+    object Melee : WeaponRange() {
+        override fun toString(): String = "Melee"
+    }
+    data class DualPurpose(val inches: Int) : WeaponRange() {
+        override fun toString(): String = "${inches}\"/Melee"
+    }
+    object None : WeaponRange() {
+        override fun toString(): String = "-"
+    }
+}
+
+/**
  * Jerarquía sellada (Sealed Class) para todo el equipamiento de Trench Crusade.
+ * Sigue estrictamente la especificación oficial de Profile, Type, Range, Keywords y Special Rules.
  */
 sealed class Equipment {
     abstract val id: String
@@ -51,19 +83,60 @@ sealed class Equipment {
     abstract val source: EquipmentSource
     abstract val category: BattlekitCategory
     abstract val description: String
+    abstract val type: BattlekitType
+    abstract val range: WeaponRange
+    abstract val keywords: List<String>
+    abstract val specialRules: List<String>
 
-    data class Weapon(
+    val isOneHanded: Boolean get() = type == BattlekitType.ONE_HANDED || type == BattlekitType.GRENADE || type == BattlekitType.SHIELD
+    val isTwoHanded: Boolean get() = type == BattlekitType.TWO_HANDED
+    val handsRequired: Int get() = when (type) {
+        BattlekitType.TWO_HANDED -> 2
+        BattlekitType.ONE_HANDED, BattlekitType.SHIELD -> 1
+        else -> 0
+    }
+
+    data class RangedWeapon(
         override val id: String,
         override val name: String,
         override val cost: EquipmentCost,
         override val source: EquipmentSource = EquipmentSource.STANDARD,
-        override val category: BattlekitCategory,
         override val description: String,
-        val rangeInInches: Int? = null,
-        val diceCount: Int = 1,
-        val armorPiercing: Int = 0,
-        val specialRules: List<String> = emptyList()
-    ) : Equipment()
+        override val type: BattlekitType = BattlekitType.TWO_HANDED,
+        override val range: WeaponRange,
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
+    ) : Equipment() {
+        override val category: BattlekitCategory = BattlekitCategory.RANGED_WEAPONS
+    }
+
+    data class MeleeWeapon(
+        override val id: String,
+        override val name: String,
+        override val cost: EquipmentCost,
+        override val source: EquipmentSource = EquipmentSource.STANDARD,
+        override val description: String,
+        override val type: BattlekitType = BattlekitType.ONE_HANDED,
+        override val range: WeaponRange = WeaponRange.Melee,
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
+    ) : Equipment() {
+        override val category: BattlekitCategory = BattlekitCategory.MELEE_WEAPONS
+    }
+
+    data class DualPurposeWeapon(
+        override val id: String,
+        override val name: String,
+        override val cost: EquipmentCost,
+        override val source: EquipmentSource = EquipmentSource.STANDARD,
+        override val description: String,
+        override val type: BattlekitType = BattlekitType.ONE_HANDED,
+        override val range: WeaponRange,
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
+    ) : Equipment() {
+        override val category: BattlekitCategory = BattlekitCategory.RANGED_WEAPONS
+    }
 
     data class Grenade(
         override val id: String,
@@ -71,10 +144,12 @@ sealed class Equipment {
         override val cost: EquipmentCost,
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
-        val blastRadiusInInches: Int? = null,
-        val specialEffect: String
+        override val range: WeaponRange = WeaponRange.Ranged(8),
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.GRENADES
+        override val type: BattlekitType = BattlekitType.GRENADE
     }
 
     data class Armor(
@@ -83,10 +158,14 @@ sealed class Equipment {
         override val cost: EquipmentCost,
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
-        val armorBonus: Int,
-        val movementPenalty: Int = 0
+        val armorBonus: Int = 1,
+        val movementPenalty: Int = 0,
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.ARMOUR
+        override val type: BattlekitType = BattlekitType.ARMOUR
+        override val range: WeaponRange = WeaponRange.None
     }
 
     data class Shield(
@@ -96,9 +175,13 @@ sealed class Equipment {
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
         val meleeDefenseBonus: Int = 1,
-        val rangedDefenseBonus: Int = 0
+        val rangedDefenseBonus: Int = 1,
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.SHIELDS
+        override val type: BattlekitType = BattlekitType.SHIELD
+        override val range: WeaponRange = WeaponRange.None
     }
 
     data class Gear(
@@ -107,9 +190,12 @@ sealed class Equipment {
         override val cost: EquipmentCost,
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
-        val specialEffect: String
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.EQUIPMENT
+        override val type: BattlekitType = BattlekitType.EQUIPMENT
+        override val range: WeaponRange = WeaponRange.None
     }
 
     data class SpecialItem(
@@ -118,8 +204,11 @@ sealed class Equipment {
         override val cost: EquipmentCost,
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
-        val relicRule: String
+        override val keywords: List<String> = emptyList(),
+        override val specialRules: List<String> = emptyList()
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.SPECIAL
+        override val type: BattlekitType = BattlekitType.SPECIAL
+        override val range: WeaponRange = WeaponRange.None
     }
 }

@@ -10,13 +10,28 @@ enum class MemberRole {
 }
 
 data class ModelStats(
-    val movement: Int = 5,
+    val movement: Int = 6,
     val melee: Int = 0,
     val ranged: Int = 0,
     val armor: Int = 0,
     val courage: Int = 0,
     val maxWounds: Int = 1
-)
+) {
+    companion object {
+        /**
+         * Estructura base para capitanes y líderes:
+         * Movimiento = 6", Melee = 0, Ranged = 0, Armadura = 0, Courage = 2, Max Wounds = 1.
+         */
+        val CaptainBase = ModelStats(
+            movement = 6,
+            melee = 0,
+            ranged = 0,
+            armor = 0,
+            courage = 2,
+            maxWounds = 1
+        )
+    }
+}
 
 /**
  * Superclase abstracta para los integrantes de una Warband.
@@ -55,7 +70,7 @@ abstract class WarbandMember {
 data class LeaderMember(
     override val id: String,
     override val customName: String,
-    override val baseStats: ModelStats,
+    override val baseStats: ModelStats = ModelStats.CaptainBase,
     override val baseCostInDucats: Int,
     override val battlekit: Battlekit = Battlekit(),
     override val experiencePoints: Int = 0,
@@ -64,6 +79,22 @@ data class LeaderMember(
     val commandAbilities: List<String> = emptyList()
 ) : WarbandMember() {
     override val role: MemberRole = MemberRole.LEADER
+    override fun canEquip(equipment: Equipment): Boolean = true
+}
+
+data class EliteMember(
+    override val id: String,
+    override val customName: String,
+    override val baseStats: ModelStats,
+    override val baseCostInDucats: Int,
+    override val battlekit: Battlekit = Battlekit(),
+    override val experiencePoints: Int = 0,
+    override val injuries: List<String> = emptyList(),
+    override val isDead: Boolean = false,
+    val specialSkills: List<String> = emptyList(),
+    val isPromotedFromTrooper: Boolean = false
+) : WarbandMember() {
+    override val role: MemberRole = MemberRole.ELITE
     override fun canEquip(equipment: Equipment): Boolean = true
 }
 
@@ -80,4 +111,22 @@ data class TrooperMember(
 ) : WarbandMember() {
     override val role: MemberRole = MemberRole.TROOPER
     override fun canEquip(equipment: Equipment): Boolean = battlekit.allEquipment().size < maxEquipmentAllowed
+
+    /**
+     * Asciende a una tropa estándar a categoría Elite tras ganar experiencia o méritos en campaña.
+     */
+    fun promoteToElite(specialSkillName: String = "Promoted Veteran"): EliteMember {
+        return EliteMember(
+            id = id,
+            customName = customName,
+            baseStats = baseStats.copy(courage = baseStats.courage + 1),
+            baseCostInDucats = baseCostInDucats,
+            battlekit = battlekit,
+            experiencePoints = experiencePoints,
+            injuries = injuries,
+            isDead = isDead,
+            specialSkills = listOf(specialSkillName),
+            isPromotedFromTrooper = true
+        )
+    }
 }

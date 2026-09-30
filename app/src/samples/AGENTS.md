@@ -22,6 +22,7 @@
 - Para las barras de navegacion se debe de usar el color #960018, ademas de que se debe de mantener un estilo consistente en todo el proyecto.
 - Para los botones se debe de usar el color #960018, ademas de que se debe de mantener un estilo consistente en todo el proyecto.
 ## Reglas
+- Recuerda seguir los principios SOLID para mantener un código limpio y fácil de mantener.
 - Recuerda siempre seguir la estructura de carpetas y convenciones de nombres establecidas en la documentación.
 - Recuerda siempre leer la documentación antes de realizar cualquier cambio en el código.
 - Recuerda que las reglas iran cambiando acorde a nuevos lanzamientos y modificaciones del libro de reglas de trench crusade, por lo que se debe de estar al tanto de los cambios y adaptarse a ellos.
@@ -31,6 +32,6 @@
 - Lee app/constitution.md y la spec activa antes de tocar código.
 - Nunca borres código sin antes preguntar y explicar que es lo que se desea cambiar, además de que se debe de realizar una compilación del código para verificar que no se rompa nada.
 - <Límites: qué no tocar: la estructura base antes de realizar testeos correspondientes y una compilaciondel codigo, qué no añadir sin preguntar nuevas funciones al proyecto sin antes realizar una pregunta y explicacion de que es lo que cambio o lo que se desea cambiar.>
-
+- Crea un memori md cada vez que se realicen cambios en el código, para llevar un registro de los cambios realizados y poder volver a una versión anterior si es necesario.
 ## Al terminar cualquier tarea
 - <Verificación obligatoria, ejecutar los tests en donde se han realizado los cambios o las que hayan sido afectadas por estos cambios.>

@@ -10,11 +10,22 @@ data class Warband(
     val faction: Faction,
     val ducats: Int,
     val gloryPoints: Int,
-    val members: List<WarbandMember> = emptyList()
+    val members: List<WarbandMember> = emptyList(),
+    val maxElitesAllowed: Int = 6
 ) {
     fun totalCostInDucats(): Int = members.sumOf { it.calculateTotalCostInDucats() }
 
     fun totalCostInGloryPoints(): Int = members.sumOf { it.calculateTotalCostInGloryPoints() }
+
+    /**
+     * Retorna el número actual de miembros con rol Elite en la banda.
+     */
+    fun currentEliteCount(): Int = members.count { it.role == MemberRole.ELITE }
+
+    /**
+     * Valida si la banda puede agregar o ascender un integrante a categoría Elite (Límite máximo: 6 por banda).
+     */
+    fun canAddElite(): Boolean = currentEliteCount() < maxElitesAllowed
 
     /**
      * Cumple RF-1 y RF-2: Bloquea edición si la campaña no está en Fase de Cuartel.
