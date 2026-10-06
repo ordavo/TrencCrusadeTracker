@@ -9,19 +9,19 @@ import com.example.trenchcrusadetracker.domain.model.equipment.EquipmentSource
 import com.example.trenchcrusadetracker.domain.model.equipment.WeaponRange
 
 /**
- * Implementación maestra del catálogo completo de equipamiento de Trench Crusade.
- * Sigue estrictamente la reestructuración del Profile (Type, Range, Keywords y Special Rules).
+ * Catálogo Maestro del Arsenal General de Trench Crusade (Extraído del libro Warbands of Trench Crusade).
+ * Permite que cada facción consulte e herede su equipamiento aplicando sus propias restricciones y costos.
  */
 class EquipmentRepositoryImpl : EquipmentRepository {
 
     private val masterCatalog: List<Equipment> = listOf(
-        // Ranged Weapons
+        // ==================== RANGED WEAPONS ====================
         Equipment.RangedWeapon(
-            id = "w_trench_rifle",
-            name = "Trench Rifle",
+            id = "w_bolt_action_rifle",
+            name = "Bolt-Action Rifle / Trench Rifle",
             cost = EquipmentCost(20, CurrencyType.DUCATS),
             source = EquipmentSource.STANDARD,
-            description = "Standard bolt-action infantry rifle.",
+            description = "Standard service rifle for infantry.",
             type = BattlekitType.TWO_HANDED,
             range = WeaponRange.Ranged(24),
             keywords = listOf("2-Handed", "+0 DICE")
@@ -31,7 +31,7 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             name = "Submachine Gun",
             cost = EquipmentCost(30, CurrencyType.DUCATS),
             source = EquipmentSource.STANDARD,
-            description = "Rapid fire automatic weapon for close trench breaches.",
+            description = "Automatic close-quarters breach weapon.",
             type = BattlekitType.TWO_HANDED,
             range = WeaponRange.Ranged(18),
             keywords = listOf("2-Handed", "+1 DICE", "Rapid Fire")
@@ -41,7 +41,7 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             name = "Sniper Rifle with Scope",
             cost = EquipmentCost(35, CurrencyType.DUCATS),
             source = EquipmentSource.STANDARD,
-            description = "High precision long-range rifle with telescopic scope.",
+            description = "High precision long-range rifle with telescopic sights.",
             type = BattlekitType.TWO_HANDED,
             range = WeaponRange.Ranged(36),
             keywords = listOf("2-Handed", "+1 DICE", "Scoped")
@@ -51,13 +51,43 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             name = "Trench Shotgun",
             cost = EquipmentCost(15, CurrencyType.DUCATS),
             source = EquipmentSource.STANDARD,
-            description = "Devastating close-range scatter gun.",
+            description = "Scatter firearm for close-range trench clears.",
             type = BattlekitType.TWO_HANDED,
             range = WeaponRange.Ranged(8),
             keywords = listOf("2-Handed", "+1 DICE", "SCATTER")
         ),
+        Equipment.RangedWeapon(
+            id = "w_heavy_machine_gun",
+            name = "Heavy Machine Gun",
+            cost = EquipmentCost(60, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Heavy rapid-fire suppression weapon.",
+            type = BattlekitType.TWO_HANDED,
+            range = WeaponRange.Ranged(36),
+            keywords = listOf("2-Handed", "+2 DICE", "Heavy", "Suppression")
+        ),
+        Equipment.RangedWeapon(
+            id = "w_flamethrower",
+            name = "Trench Flamethrower",
+            cost = EquipmentCost(45, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Incendiary projector firing torrents of liquid fire.",
+            type = BattlekitType.TWO_HANDED,
+            range = WeaponRange.Ranged(12),
+            keywords = listOf("2-Handed", "BLAST (3\")", "Incendiary")
+        ),
+        Equipment.RangedWeapon(
+            id = "w_anti_tank_rifle",
+            name = "Anti-Tank Rifle",
+            cost = EquipmentCost(50, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "High-caliber anti-armor rifle designed to breach plate.",
+            type = BattlekitType.TWO_HANDED,
+            range = WeaponRange.Ranged(30),
+            keywords = listOf("2-Handed", "+1 INJURY DICE", "Heavy")
+        ),
 
-        // Dual Purpose Weapons
+        // ==================== DUAL PURPOSE WEAPONS ====================
         Equipment.DualPurposeWeapon(
             id = "w_pistol",
             name = "Service Pistol",
@@ -68,8 +98,18 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             range = WeaponRange.DualPurpose(12),
             keywords = listOf("1-Handed", "Dual-Purpose")
         ),
+        Equipment.DualPurposeWeapon(
+            id = "w_heavy_pistol",
+            name = "Heavy Service Pistol",
+            cost = EquipmentCost(15, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Large-caliber sidearm for close trench fighting.",
+            type = BattlekitType.ONE_HANDED,
+            range = WeaponRange.DualPurpose(12),
+            keywords = listOf("1-Handed", "+1 INJURY DICE", "Dual-Purpose")
+        ),
 
-        // Grenades
+        // ==================== GRENADES ====================
         Equipment.Grenade(
             id = "g_frag",
             name = "Frag Grenade",
@@ -78,6 +118,15 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             description = "High explosive shrapnel grenade.",
             range = WeaponRange.Ranged(8),
             keywords = listOf("Grenade", "BLAST (2\")")
+        ),
+        Equipment.Grenade(
+            id = "g_smoke",
+            name = "Smoke Grenade",
+            cost = EquipmentCost(8, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Canister providing dense tactical smoke cover.",
+            range = WeaponRange.Ranged(8),
+            keywords = listOf("Grenade", "BLAST (3\")", "Smoke")
         ),
         Equipment.Grenade(
             id = "g_mustard_gas",
@@ -89,7 +138,7 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             keywords = listOf("Grenade", "BLAST (3\")", "Gas")
         ),
 
-        // Melee Weapons
+        // ==================== MELEE WEAPONS ====================
         Equipment.MeleeWeapon(
             id = "m_trench_club",
             name = "Trench Club",
@@ -115,13 +164,33 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             name = "Trench Bayonet",
             cost = EquipmentCost(5, CurrencyType.DUCATS),
             source = EquipmentSource.STANDARD,
-            description = "Rifle mounted spike.",
+            description = "Rifle mounted spike or combat knife.",
             type = BattlekitType.ONE_HANDED,
             range = WeaponRange.Melee,
             keywords = listOf("1-Handed")
         ),
+        Equipment.MeleeWeapon(
+            id = "m_greatsword",
+            name = "Greatsword / Two-Handed Sword",
+            cost = EquipmentCost(25, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Massive blade requiring two hands to cleave armor.",
+            type = BattlekitType.TWO_HANDED,
+            range = WeaponRange.Melee,
+            keywords = listOf("2-Handed", "+1 DICE", "+1 INJURY DICE")
+        ),
+        Equipment.MeleeWeapon(
+            id = "m_trench_mace",
+            name = "Trench Mace / War Hammer",
+            cost = EquipmentCost(15, CurrencyType.DUCATS),
+            source = EquipmentSource.STANDARD,
+            description = "Heavy impact weapon designed to crush helmets.",
+            type = BattlekitType.ONE_HANDED,
+            range = WeaponRange.Melee,
+            keywords = listOf("1-Handed", "+1 INJURY DICE")
+        ),
 
-        // Armour
+        // ==================== ARMOUR ====================
         Equipment.Armor(
             id = "a_trench_armor",
             name = "Trench Armor",
@@ -143,7 +212,7 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             keywords = listOf("Armour", "+2 ARMOUR", "-1 MOVEMENT")
         ),
 
-        // Shields
+        // ==================== SHIELDS ====================
         Equipment.Shield(
             id = "s_trench_shield",
             name = "Trench Shield",
@@ -155,7 +224,7 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             keywords = listOf("Shield", "1-Handed", "Shield Restriction")
         ),
 
-        // Equipment / Gear
+        // ==================== EQUIPMENT / GEAR ====================
         Equipment.Gear(
             id = "eq_gas_mask",
             name = "Gas Mask",
@@ -173,13 +242,13 @@ class EquipmentRepositoryImpl : EquipmentRepository {
             keywords = listOf("Equipment", "Heal")
         ),
 
-        // Special Items & Relics
+        // ==================== SPECIAL ITEMS & RELICS ====================
         Equipment.SpecialItem(
             id = "sp_holy_relic",
             name = "Saint's Relic",
             cost = EquipmentCost(3, CurrencyType.GLORY_POINTS),
             source = EquipmentSource.EXPLORATION,
-            description = "Ancient sacred relic.",
+            description = "Ancient sacred relic granting divine courage.",
             keywords = listOf("Special", "Relic", "+1 COURAGE")
         )
     )
