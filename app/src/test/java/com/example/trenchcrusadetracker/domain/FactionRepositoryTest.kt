@@ -10,11 +10,11 @@ import org.junit.Test
 class FactionRepositoryTest {
 
     @Test
-    fun `test repository loads all 9 warbands and factions`() {
+    fun `test repository loads all 17 warbands and factions`() {
         val repository = FactionRepositoryImpl()
         val factions = repository.getAllFactions()
 
-        assertEquals(9, factions.size)
+        assertEquals(17, factions.size)
 
         val newAntioch = repository.getFactionById("new_antioch")
         assertNotNull(newAntioch)

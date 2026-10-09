@@ -53,3 +53,27 @@ Contexto: el usuario pidió eliminar `courage` de los providers y completar las 
 
 ### Pendiente (no inventado, requiere libros de banda)
 - Catálogos de equipo por facción (armas/objetos de `app/sources/`) aún no están completos; el arsenal maestro en `EquipmentRepositoryImpl.kt` sigue como está.
+
+## 2026-10-08 (3) — "The Court of the Seven-Headed Serpent" desde October-Rules-Review-2026.pdf
+
+Contexto: salió la actualización de reglas `October-Rules-Review-2026.pdf` (36 pág., libro completo de The Court, 36 pág.) con la mecánica de SIN MARKERS (antes eran BLOOD MARKERS en el libro maestro). El usuario pidió crear las facciones faltantes del Court y actualizar el resto.
+
+### Cambios realizados
+- Nuevo `TheCourtRoster.kt` (en `domain/faction/providers/`): unidades base del Court compartidas vía `internal object` con funciones `praetor()`, `sorcerer()`, `hellKnight()`, `hunter()`, `wretched()`, `pitLocust()`, `yokeFiend()`, `desecratedSaint()`. Stats/costos verificados contra el PDF de Octubre y el libro maestro (páginas 145-167).
+    - Praetor 115👑 (8"/Flying, +3/+3, ARM 0) — Líder; Sorcerer 85👑 (6"/Flying, +1/+1); Hell Knight 0-3 = 100👑 (6"/Inf, +0/+2, ARM -2); Hunter 0-1 = 110👑 (6"/Inf, +2/+1); Wretched 20👑 (6"/Inf, -1/-1); Pit Locust 0-3 = 90👑 (8"/Flying, +0/+2, ARM -2); Yoke Fiend 35👑 (6"/Inf, +0/+1); Desecrated Saint 0-1 = 140👑 (6"/Inf, +0/+2, ARM -3).
+- 8 nuevos providers (patrón OCP, registrados en `FactionRepositoryImpl.providers`):
+    - `TheCourtFactionProvider` (id `the_court`, "The Court of the Seven-Headed Serpent").
+    - Variantes de Pecado Capital (700👑): `HighCathedraOfPride` (`court_pride`), `GoldenSeatOfGreed` (`court_greed`), `FleshDivanOfLust` (`court_lust`, Desecrated Saint 8"/Flying ARM -2), `BlackKlismosOfEnvy` (`court_envy`), `HungeringThroneOfGluttony` (`court_gluttony`), `IronCuruleOfWrath` (`court_wrath`, Pit Locust FIRE), `SilkBedOfSloth` (`court_sloth`, Hell Knight Witch Knight Ranged +1).
+    - Cada variante usa `.copy()` del roster base con keywords/reglas propias (Prideful, Greedy, Lustful, Envious, Gluttonous, Wrathful, Slothful, + abilities de sustitución del Desecrated Saint).
+- `FactionRepositoryImpl.kt`: 9 → 17 providers registrados (imports añadidos).
+- `FactionRepositoryTest.kt`: espera 17 facciones (antes 9).
+- `defaultStartingDucats = 700` para todas las facciones del Court (confirmado en el libro maestro: "You have 700 👑 to recruit a Court of the Seven-Headed Serpent Warband").
+
+### Verificación
+- `.\gradlew.bat testDebugUnitTest assembleDebug` → BUILD SUCCESSFUL (compileDebugKotlin real).
+- Suite de tests sigue en verde (FactionRepositoryTest actualizado; el resto no dependía de datos de providers).
+
+### Pendiente / notas
+- El PDF de Octubre NO modifica stats de las 9 facciones anteriores (solo es The Court); "actualizar las demás warbands" = registrarlas en el repositorio, ya hecho.
+- Black Grail base (Cult of the Black Grail, libro maestro pág. 126-145) sigue sin provider; Great Hunger ya existe como su variante. Pendiente si el usuario lo pide.
+- Mercenarios del Court (Goetic Warlock, Sin Eater, Perilous Sword Saint) no están en el PDF de Octubre (se referencian como "Any Mercenary"); no se inventaron stats.

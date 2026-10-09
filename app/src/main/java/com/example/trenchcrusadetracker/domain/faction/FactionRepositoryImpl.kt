@@ -1,13 +1,21 @@
 package com.example.trenchcrusadetracker.domain.faction
 
+import com.example.trenchcrusadetracker.domain.faction.providers.BlackKlismosOfEnvyFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.FleshDivanOfLustFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.GoldenSeatOfGreedFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.GreatHungerFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.HereticLegionFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.HereticNavalRaidersFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.HighCathedraOfPrideFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.HungeringThroneOfGluttonyFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.IronCuruleOfWrathFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.IronSultanateFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.NewAntiochFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.PrussianStosstruppenFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.RedBrigadeFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.SacredAfflictionFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.SilkBedOfSlothFactionProvider
+import com.example.trenchcrusadetracker.domain.faction.providers.TheCourtFactionProvider
 import com.example.trenchcrusadetracker.domain.faction.providers.TrenchPilgrimsFactionProvider
 import com.example.trenchcrusadetracker.domain.model.faction.Faction
 
@@ -25,7 +33,15 @@ class FactionRepositoryImpl(
         PrussianStosstruppenFactionProvider(),
         HereticNavalRaidersFactionProvider(),
         RedBrigadeFactionProvider(),
-        GreatHungerFactionProvider()
+        GreatHungerFactionProvider(),
+        TheCourtFactionProvider(),
+        HighCathedraOfPrideFactionProvider(),
+        GoldenSeatOfGreedFactionProvider(),
+        FleshDivanOfLustFactionProvider(),
+        BlackKlismosOfEnvyFactionProvider(),
+        HungeringThroneOfGluttonyFactionProvider(),
+        IronCuruleOfWrathFactionProvider(),
+        SilkBedOfSlothFactionProvider()
     )
 ) : FactionRepository {
 
