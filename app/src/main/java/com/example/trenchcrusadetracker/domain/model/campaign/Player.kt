@@ -5,5 +5,6 @@ import com.example.trenchcrusadetracker.domain.model.warband.Warband
 data class Player(
     val id: String,
     val name: String,
-    val warband: Warband? = null
+    val warband: Warband? = null,
+    val victoryPoints: Int = 0
 )

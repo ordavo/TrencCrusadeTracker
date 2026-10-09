@@ -25,7 +25,7 @@ class ElitePromotionTest {
         val trooper = TrooperMember(
             id = "t1",
             customName = "Private Miller",
-            baseStats = ModelStats(movement = 6, courage = 0),
+            baseStats = ModelStats(movement = 6),
             baseCostInDucats = 30
         )
 
@@ -33,7 +33,6 @@ class ElitePromotionTest {
 
         assertEquals(MemberRole.ELITE, promotedElite.role)
         assertEquals("Private Miller", promotedElite.customName)
-        assertEquals(1, promotedElite.baseStats.courage)
         assertTrue(promotedElite.isPromotedFromTrooper)
         assertEquals(listOf("Trench Veteran"), promotedElite.specialSkills)
     }

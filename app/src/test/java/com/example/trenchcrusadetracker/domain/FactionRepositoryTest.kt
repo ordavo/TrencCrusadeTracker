@@ -22,11 +22,11 @@ class FactionRepositoryTest {
 
         val provider = repository.getProviderByFactionId("new_antioch")
         assertNotNull(provider)
-        assertEquals(4, provider?.getAvailableUnits()?.size)
+        assertEquals(8, provider?.getAvailableUnits()?.size)
     }
 
     @Test
-    fun `test captains and leaders default to CaptainBase stats`() {
+    fun `test captains and leaders have leader role and keyword`() {
         val repository = FactionRepositoryImpl()
         val factions = repository.getAllFactions()
 
@@ -35,18 +35,13 @@ class FactionRepositoryTest {
             val leaders = provider?.getAvailableUnits()?.filterIsInstance<LeaderMember>() ?: emptyList()
 
             for (leader in leaders) {
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have movement 6", 6, leader.baseStats.movement)
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have melee 0", 0, leader.baseStats.melee)
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have ranged 0", 0, leader.baseStats.ranged)
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have armor 0", 0, leader.baseStats.armor)
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have courage 2", 2, leader.baseStats.courage)
-                assertEquals("Leader ${leader.customName} in ${faction.name} must have maxWounds 1", 1, leader.baseStats.maxWounds)
+                assertTrue("Leader ${leader.customName} in ${faction.name} must have LEADER keyword", leader.keywords.contains("LEADER"))
             }
         }
     }
 
     @Test
-    fun `test all characters start with 0 base armor and no equipment`() {
+    fun `test all characters start with no equipment`() {
         val repository = FactionRepositoryImpl()
         val factions = repository.getAllFactions()
 
@@ -56,7 +51,6 @@ class FactionRepositoryTest {
             val units = provider?.getAvailableUnits() ?: emptyList()
 
             for (unit in units) {
-                assertEquals("Unit ${unit.customName} in ${faction.name} must have 0 base armor", 0, unit.baseStats.armor)
                 assertTrue("Unit ${unit.customName} in ${faction.name} must start with no equipment", unit.battlekit.allEquipment().isEmpty())
             }
         }

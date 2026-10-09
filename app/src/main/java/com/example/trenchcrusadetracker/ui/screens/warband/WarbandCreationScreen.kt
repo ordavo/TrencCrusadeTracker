@@ -359,7 +359,7 @@ private fun MemberCard(
             // Atributos Base
             val stats = member.baseStats
             Text(
-                text = "MOV: ${stats.movement}\" | MELEE: +${stats.melee} | RANGED: +${stats.ranged} | ARMOR: ${stats.armor} | COURAGE: +${stats.courage} | WOUNDS: ${stats.maxWounds}",
+                text = "MOV: ${stats.movement}\" | MELEE: +${stats.melee} | RANGED: +${stats.ranged} | ARMOR: ${stats.armor} | WOUNDS: ${stats.maxWounds}",
                 style = MaterialTheme.typography.bodySmall,
                 color = ParchmentText.copy(alpha = 0.8f)
             )
