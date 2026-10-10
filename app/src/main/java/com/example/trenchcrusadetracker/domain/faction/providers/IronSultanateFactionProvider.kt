@@ -31,10 +31,11 @@ class IronSultanateFactionProvider : FactionProvider {
                 effectDescription = "Masters of alchemy forge peerless war machines and alchemical weapons."
             )
         ),
-        defaultStartingDucats = 500
+        defaultStartingDucats = 700,
+        variants = WarbandVariants.ironSultanate
     )
 
-    override val defaultStartingDucats: Int = 500
+    override val defaultStartingDucats: Int = 700
     override val defaultStartingGloryPoints: Int = 0
 
     override fun getAvailableUnits(): List<WarbandMember> {

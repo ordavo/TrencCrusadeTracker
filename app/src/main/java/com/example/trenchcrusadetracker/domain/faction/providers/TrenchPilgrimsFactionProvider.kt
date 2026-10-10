@@ -31,10 +31,11 @@ class TrenchPilgrimsFactionProvider : FactionProvider {
                 effectDescription = "Fallen pilgrims are honoured through Resurrection and Martyrdom Devices."
             )
         ),
-        defaultStartingDucats = 500
+        defaultStartingDucats = 700,
+        variants = WarbandVariants.trenchPilgrims
     )
 
-    override val defaultStartingDucats: Int = 500
+    override val defaultStartingDucats: Int = 700
     override val defaultStartingGloryPoints: Int = 0
 
     override fun getAvailableUnits(): List<WarbandMember> {

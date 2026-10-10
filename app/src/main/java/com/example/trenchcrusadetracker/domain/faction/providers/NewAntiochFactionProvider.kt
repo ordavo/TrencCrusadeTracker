@@ -31,10 +31,11 @@ class NewAntiochFactionProvider : FactionProvider {
                 effectDescription = "A New Antioch Warband can include up to 2 Fireteams, each consisting of a pair of aligned models."
             )
         ),
-        defaultStartingDucats = 500
+        defaultStartingDucats = 700,
+        variants = WarbandVariants.newAntioch
     )
 
-    override val defaultStartingDucats: Int = 500
+    override val defaultStartingDucats: Int = 700
     override val defaultStartingGloryPoints: Int = 0
 
     override fun getAvailableUnits(): List<WarbandMember> {

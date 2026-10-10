@@ -31,10 +31,11 @@ class HereticLegionFactionProvider : FactionProvider {
                 effectDescription = "Perform dark rites to earn Blood Markers upon defeating enemies."
             )
         ),
-        defaultStartingDucats = 500
+        defaultStartingDucats = 700,
+        variants = WarbandVariants.hereticLegions
     )
 
-    override val defaultStartingDucats: Int = 500
+    override val defaultStartingDucats: Int = 700
     override val defaultStartingGloryPoints: Int = 0
 
     override fun getAvailableUnits(): List<WarbandMember> {

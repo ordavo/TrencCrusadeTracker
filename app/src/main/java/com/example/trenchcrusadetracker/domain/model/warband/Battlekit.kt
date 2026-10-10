@@ -62,7 +62,7 @@ data class Battlekit(
         // Restricciones con Escudo
         if (carriesShield) {
             // No se pueden llevar armas de 2 Manos salvo que tengan la estipulación Shield Combo
-            if (item.isTwoHanded && !item.keywords.contains("Shield Combo")) {
+            if (item.isTwoHanded && !item.stipulations.shieldCombo && !item.keywords.contains("Shield Combo")) {
                 return false
             }
             // Máximo una arma de 1 Mano Melee y una de 1 Mano a Distancia
@@ -112,6 +112,22 @@ data class Battlekit(
             BattlekitCategory.SHIELDS -> copy(shields = shields + item)
             BattlekitCategory.EQUIPMENT -> copy(equipment = equipment + item)
             BattlekitCategory.SPECIAL -> copy(special = special + item)
+        }
+    }
+
+    /**
+     * Devuelve las piezas de equipamiento del Battlekit pertenecientes a una categoría.
+     * Útil para mostrar el equipamiento agrupado por secciones en la interfaz.
+     */
+    fun itemsInCategory(category: BattlekitCategory): List<Equipment> {
+        return when (category) {
+            BattlekitCategory.RANGED_WEAPONS -> rangedWeapons
+            BattlekitCategory.GRENADES -> grenades
+            BattlekitCategory.MELEE_WEAPONS -> meleeWeapons
+            BattlekitCategory.ARMOUR -> armour
+            BattlekitCategory.SHIELDS -> shields
+            BattlekitCategory.EQUIPMENT -> equipment
+            BattlekitCategory.SPECIAL -> special
         }
     }
 

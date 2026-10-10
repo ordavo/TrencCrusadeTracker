@@ -73,6 +73,55 @@ sealed class WeaponRange {
 }
 
 /**
+ * Estipulaciones ("Armoury Stipulations") que una Armería de facción puede imponer
+ * a una pieza de Battlekit sobre el perfil estándar (ver "Warbands of Trench Crusade").
+ *
+ * - Consumable: se retira del roster al finalizar la partida.
+ * - Headgear: un modelo no puede portar más de una pieza de Headgear.
+ * - Shield Combo: permite combinar la pieza (arma 2 manos) con un Escudo.
+ * - Bayonet Lug: requisito para fijar una Bayoneta a un arma a distancia.
+ * - Limit: número máximo de esa pieza que puede tener una banda en campaña.
+ * - LimitExcluding: excepción textual al límite (p. ej. "Mechanized Heavy Infantry").
+ * - RestrictedTo: palabras clave / tipos de modelo que pueden portarla ("ELITE", etc.).
+ */
+data class EquipmentStipulations(
+    val consumable: Boolean = false,
+    val headgear: Boolean = false,
+    val shieldCombo: Boolean = false,
+    val bayonetLug: Boolean = false,
+    val limit: Int? = null,
+    val limitExcluding: String? = null,
+    val restrictedTo: List<String> = emptyList()
+) {
+    /** Indica si la pieza está restringida a modelos con el keyword ELITE. */
+    val eliteOnly: Boolean get() = restrictedTo.any { it.equals("ELITE", ignoreCase = true) }
+
+    /** Indica si la pieza impone alguna estipulación. */
+    val isEmpty: Boolean
+        get() = !consumable && !headgear && !shieldCombo && !bayonetLug &&
+            limit == null && limitExcluding == null && restrictedTo.isEmpty()
+
+    /** Texto legible para la interfaz (en español). */
+    fun display(): String {
+        val parts = mutableListOf<String>()
+        if (restrictedTo.isNotEmpty()) parts += "${restrictedTo.joinToString(" & ")} only"
+        if (limit != null) {
+            val extra = limitExcluding?.let { " (excl. $it)" } ?: ""
+            parts += "Limit: $limit$extra"
+        }
+        if (consumable) parts += "Consumable"
+        if (headgear) parts += "Headgear"
+        if (shieldCombo) parts += "Shield Combo"
+        if (bayonetLug) parts += "Bayonet Lug"
+        return parts.joinToString(", ")
+    }
+
+    companion object {
+        val NONE = EquipmentStipulations()
+    }
+}
+
+/**
  * Jerarquía sellada (Sealed Class) para todo el equipamiento de Trench Crusade.
  * Sigue estrictamente la especificación oficial de Profile, Type, Range, Keywords y Special Rules.
  */
@@ -85,6 +134,8 @@ sealed class Equipment {
     abstract val description: String
     abstract val type: BattlekitType
     abstract val range: WeaponRange
+    /** Estipulaciones impuestas por la Armería de la facción (vacío = perfil estándar). */
+    abstract val stipulations: EquipmentStipulations
     abstract val keywords: List<String>
     abstract val specialRules: List<String>
 
@@ -105,7 +156,8 @@ sealed class Equipment {
         override val type: BattlekitType = BattlekitType.TWO_HANDED,
         override val range: WeaponRange,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.RANGED_WEAPONS
     }
@@ -119,7 +171,8 @@ sealed class Equipment {
         override val type: BattlekitType = BattlekitType.ONE_HANDED,
         override val range: WeaponRange = WeaponRange.Melee,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.MELEE_WEAPONS
     }
@@ -133,7 +186,8 @@ sealed class Equipment {
         override val type: BattlekitType = BattlekitType.ONE_HANDED,
         override val range: WeaponRange,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.RANGED_WEAPONS
     }
@@ -146,7 +200,8 @@ sealed class Equipment {
         override val description: String,
         override val range: WeaponRange = WeaponRange.Ranged(8),
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.GRENADES
         override val type: BattlekitType = BattlekitType.GRENADE
@@ -161,7 +216,8 @@ sealed class Equipment {
         val armorBonus: Int = 1,
         val movementPenalty: Int = 0,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.ARMOUR
         override val type: BattlekitType = BattlekitType.ARMOUR
@@ -177,7 +233,8 @@ sealed class Equipment {
         val meleeDefenseBonus: Int = 1,
         val rangedDefenseBonus: Int = 1,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.SHIELDS
         override val type: BattlekitType = BattlekitType.SHIELD
@@ -191,7 +248,8 @@ sealed class Equipment {
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.EQUIPMENT
         override val type: BattlekitType = BattlekitType.EQUIPMENT
@@ -205,10 +263,29 @@ sealed class Equipment {
         override val source: EquipmentSource = EquipmentSource.STANDARD,
         override val description: String,
         override val keywords: List<String> = emptyList(),
-        override val specialRules: List<String> = emptyList()
+        override val specialRules: List<String> = emptyList(),
+        override val stipulations: EquipmentStipulations = EquipmentStipulations.NONE
     ) : Equipment() {
         override val category: BattlekitCategory = BattlekitCategory.SPECIAL
         override val type: BattlekitType = BattlekitType.SPECIAL
         override val range: WeaponRange = WeaponRange.None
     }
+}
+
+/**
+ * Aplica el costo y las estipulaciones de una Armería de facción a un perfil estándar,
+ * devolviendo una copia tipada del mismo [Equipment].
+ */
+fun Equipment.withArmory(
+    cost: EquipmentCost,
+    stipulations: EquipmentStipulations
+): Equipment = when (this) {
+    is Equipment.RangedWeapon -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.MeleeWeapon -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.DualPurposeWeapon -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.Grenade -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.Armor -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.Shield -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.Gear -> copy(cost = cost, stipulations = stipulations)
+    is Equipment.SpecialItem -> copy(cost = cost, stipulations = stipulations)
 }

@@ -10,11 +10,11 @@ import org.junit.Test
 class FactionRepositoryTest {
 
     @Test
-    fun `test repository loads all 17 warbands and factions`() {
+    fun `test repository loads the 6 base factions`() {
         val repository = FactionRepositoryImpl()
         val factions = repository.getAllFactions()
 
-        assertEquals(17, factions.size)
+        assertEquals(6, factions.size)
 
         val newAntioch = repository.getFactionById("new_antioch")
         assertNotNull(newAntioch)
@@ -23,6 +23,44 @@ class FactionRepositoryTest {
         val provider = repository.getProviderByFactionId("new_antioch")
         assertNotNull(provider)
         assertEquals(8, provider?.getAvailableUnits()?.size)
+    }
+
+    @Test
+    fun `test base factions start with 700 ducats except variants`() {
+        val repository = FactionRepositoryImpl()
+        val factions = repository.getAllFactions()
+
+        for (faction in factions) {
+            assertEquals("${faction.name} should start with 700 ducats", 700, faction.defaultStartingDucats)
+        }
+    }
+
+    @Test
+    fun `test new antioch exposes its warband variants`() {
+        val repository = FactionRepositoryImpl()
+        val newAntioch = repository.getFactionById("new_antioch")
+        assertNotNull(newAntioch)
+
+        val variants = newAntioch?.variants ?: emptyList()
+        assertEquals(6, variants.size)
+
+        val papalStates = variants.find { it.id == "antioch_papal_states" }
+        assertNotNull(papalStates)
+        assertEquals(500, papalStates?.defaultStartingDucats)
+        assertEquals(11, papalStates?.defaultStartingGloryPoints)
+    }
+
+    @Test
+    fun `test black grail base faction is registered with variants`() {
+        val repository = FactionRepositoryImpl()
+        val blackGrail = repository.getFactionById("black_grail")
+        assertNotNull(blackGrail)
+        assertEquals("Cult of the Black Grail", blackGrail?.name)
+        assertEquals(2, blackGrail?.variants?.size ?: 0)
+
+        val provider = repository.getProviderByFactionId("black_grail")
+        assertNotNull(provider)
+        assertTrue((provider?.getAvailableUnits()?.size ?: 0) >= 6)
     }
 
     @Test

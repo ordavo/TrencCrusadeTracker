@@ -17,12 +17,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,9 +54,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.trenchcrusadetracker.domain.equipment.EquipmentRepositoryImpl
-import com.example.trenchcrusadetracker.domain.faction.providers.NewAntiochArmoryProvider
-import com.example.trenchcrusadetracker.domain.faction.providers.NewAntiochFactionProvider
+import com.example.trenchcrusadetracker.domain.equipment.providers.FactionArmoryRegistry
+import com.example.trenchcrusadetracker.domain.faction.FactionRepositoryImpl
+import com.example.trenchcrusadetracker.domain.model.equipment.BattlekitCategory
+import com.example.trenchcrusadetracker.domain.model.equipment.CurrencyType
 import com.example.trenchcrusadetracker.domain.model.equipment.Equipment
+import com.example.trenchcrusadetracker.domain.model.faction.Faction
+import com.example.trenchcrusadetracker.domain.model.faction.FactionRule
 import com.example.trenchcrusadetracker.domain.model.warband.EliteMember
 import com.example.trenchcrusadetracker.domain.model.warband.LeaderMember
 import com.example.trenchcrusadetracker.domain.model.warband.MemberRole
@@ -77,9 +84,19 @@ fun WarbandCreationScreen(
     onWarbandSaved: (Warband) -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
-    val factionProvider = remember { NewAntiochFactionProvider() }
+    val factionRepository = remember { FactionRepositoryImpl() }
     val masterEquipmentRepository = remember { EquipmentRepositoryImpl() }
-    val armoryProvider = remember { NewAntiochArmoryProvider(masterEquipmentRepository) }
+    val factions: List<Faction> = factionRepository.getAllFactions()
+
+    var selectedFactionId by remember { mutableStateOf(factions.first().id) }
+    var selectedVariantId by remember { mutableStateOf<String?>(null) }
+    val factionProvider = remember(selectedFactionId) {
+        factionRepository.getProviderByFactionId(selectedFactionId)
+            ?: error("No se encontró un proveedor para la facción '$selectedFactionId'")
+    }
+    val armoryProvider = remember(selectedFactionId) {
+        FactionArmoryRegistry.forFaction(selectedFactionId, masterEquipmentRepository)
+    }
 
     var warbandName by remember { mutableStateOf("") }
     var playerName by remember { mutableStateOf("") }
@@ -88,7 +105,10 @@ fun WarbandCreationScreen(
 
     // Diálogos
     var showAddUnitDialog by remember { mutableStateOf(false) }
-    var memberToEquip by remember { mutableStateOf<WarbandMember?>(null) }
+    var showFactionDialog by remember { mutableStateOf(false) }
+    var variantPickerFaction by remember { mutableStateOf<Faction?>(null) }
+    var pendingSelection by remember { mutableStateOf<FactionSelection?>(null) }
+    var memberToEquipId by remember { mutableStateOf<String?>(null) }
 
     val roles = listOf(
         MemberRole.LEADER to "Líder (Capitán)",
@@ -98,9 +118,12 @@ fun WarbandCreationScreen(
     )
 
     val currentFaction = factionProvider.faction
+    val activeVariant = currentFaction.variants.find { it.id == selectedVariantId }
+    val startingDucats = activeVariant?.defaultStartingDucats ?: currentFaction.defaultStartingDucats
+    val startingGlory = activeVariant?.defaultStartingGloryPoints ?: currentFaction.defaultStartingGloryPoints
     val totalCostDucats = members.sumOf { it.calculateTotalCostInDucats() }
     val totalCostGlory = members.sumOf { it.calculateTotalCostInGloryPoints() }
-    val remainingDucats = currentFaction.defaultStartingDucats - totalCostDucats
+    val remainingDucats = startingDucats - totalCostDucats
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -111,24 +134,52 @@ fun WarbandCreationScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Encabezado de la Facción
+            // Encabezado de la Facción (seleccionable)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(1.dp, GoldAccent, RoundedCornerShape(8.dp)),
-                colors = CardDefaults.cardColors(containerColor = SurfaceDark)
+                colors = CardDefaults.cardColors(containerColor = SurfaceDark),
+                onClick = { showFactionDialog = true }
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text(
-                        text = "FACCIÓN: ${currentFaction.name.uppercase()}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryCrimson
-                    )
-                    Text(
-                        text = "Facción activa para depuración inicial",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = GoldAccent
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "FACCIÓN: ${currentFaction.name.uppercase()}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = PrimaryCrimson
+                        )
+                        if (activeVariant != null) {
+                            Text(
+                                text = "SUBFACCIÓN: ${activeVariant.name.uppercase()}",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = PrimaryCrimson.copy(alpha = 0.85f)
+                            )
+                        }
+                        Text(
+                            text = activeVariant?.description ?: currentFaction.description,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = GoldAccent
+                        )
+                        val gloryLabel = if (startingGlory > 0) " · Gloria inicial: $startingGlory" else ""
+                        Text(
+                            text = "Ducados iniciales: $startingDucats$gloryLabel · Toca para cambiar",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = ParchmentText.copy(alpha = 0.7f)
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Cambiar facción",
+                        tint = GoldAccent
                     )
                 }
             }
@@ -179,13 +230,13 @@ fun WarbandCreationScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Ducados: $totalCostDucats / ${currentFaction.defaultStartingDucats} (Restante: $remainingDucats)",
+                    text = "Ducados: $totalCostDucats / $startingDucats (Restante: $remainingDucats)",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (remainingDucats >= 0) ParchmentText else PrimaryCrimson
                 )
                 Text(
-                    text = "Gloria: $totalCostGlory pts",
+                    text = if (startingGlory > 0) "Gloria: $totalCostGlory / $startingGlory pts" else "Gloria: $totalCostGlory pts",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = GoldAccent
@@ -249,7 +300,7 @@ fun WarbandCreationScreen(
                 items(filteredMembers) { member ->
                     MemberCard(
                         member = member,
-                        onEquipClick = { memberToEquip = member },
+                        onEquipClick = { memberToEquipId = member.id },
                         onRemoveClick = { members = members.filter { it.id != member.id } }
                     )
                 }
@@ -301,8 +352,65 @@ fun WarbandCreationScreen(
         )
     }
 
-    // Diálogo para Equipar Arsenal del Mercado/Armería
-    memberToEquip?.let { targetMember ->
+    // Selección de facción base. Al elegir una, se abre el selector de subfacción.
+    if (showFactionDialog) {
+        FactionSelectorDialog(
+            factions = factions,
+            selectedFactionId = selectedFactionId,
+            onFactionSelected = { factionId ->
+                showFactionDialog = false
+                variantPickerFaction = factions.find { it.id == factionId }
+            },
+            onDismiss = { showFactionDialog = false }
+        )
+    }
+
+    // Selección de subfacción (facción base o variante) para la facción elegida.
+    variantPickerFaction?.let { faction ->
+        VariantSelectorDialog(
+            faction = faction,
+            selectedVariantId = if (faction.id == selectedFactionId) selectedVariantId else null,
+            onVariantSelected = { variantId ->
+                variantPickerFaction = null
+                if (faction.id != selectedFactionId || variantId != selectedVariantId) {
+                    // Cambiar de facción o subfacción reemplaza las unidades actuales.
+                    if (members.isEmpty()) {
+                        selectedFactionId = faction.id
+                        selectedVariantId = variantId
+                        selectedTabRole = 0
+                    } else {
+                        pendingSelection = FactionSelection(faction.id, variantId)
+                    }
+                }
+            },
+            onDismiss = { variantPickerFaction = null }
+        )
+    }
+
+    // Confirmación antes de cambiar de facción/subfacción y descartar las unidades actuales
+    pendingSelection?.let { selection ->
+        val targetFaction = factions.find { it.id == selection.factionId }
+        val targetName = selection.variantId
+            ?.let { vid -> targetFaction?.variants?.find { it.id == vid }?.name }
+            ?: targetFaction?.name
+            ?: selection.factionId
+        ConfirmFactionChangeDialog(
+            factionName = targetName,
+            unitCount = members.size,
+            onConfirm = {
+                selectedFactionId = selection.factionId
+                selectedVariantId = selection.variantId
+                members = emptyList()
+                selectedTabRole = 0
+                pendingSelection = null
+            },
+            onDismiss = { pendingSelection = null }
+        )
+    }
+
+    // Diálogo para Equipar Arsenal del Mercado/Armería, agrupado por secciones
+    val targetMember = members.find { it.id == memberToEquipId }
+    if (targetMember != null) {
         EquipArsenalDialog(
             member = targetMember,
             availableEquipment = armoryProvider.getAvailableEquipmentForRole(targetMember.role),
@@ -315,9 +423,8 @@ fun WarbandCreationScreen(
                     else -> targetMember
                 }
                 members = members.map { if (it.id == targetMember.id) updatedMember else it }
-                memberToEquip = null
             },
-            onDismiss = { memberToEquip = null }
+            onDismiss = { memberToEquipId = null }
         )
     }
 }
@@ -456,11 +563,15 @@ private fun AddUnitDialog(
     }
 }
 
+/**
+ * Diálogo para elegir la facción de la Warband. Lista todas las facciones registradas
+ * en el repositorio y resalta la seleccionada actualmente.
+ */
 @Composable
-private fun EquipArsenalDialog(
-    member: WarbandMember,
-    availableEquipment: List<Equipment>,
-    onEquipmentSelected: (Equipment) -> Unit,
+private fun FactionSelectorDialog(
+    factions: List<Faction>,
+    selectedFactionId: String,
+    onFactionSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -473,7 +584,7 @@ private fun EquipArsenalDialog(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Arsenal para ${member.customName}",
+                    text = "Seleccionar Facción",
                     style = MaterialTheme.typography.titleLarge,
                     color = PrimaryCrimson,
                     fontWeight = FontWeight.Bold
@@ -482,31 +593,336 @@ private fun EquipArsenalDialog(
 
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.height(300.dp)
+                    modifier = Modifier.height(400.dp)
                 ) {
-                    items(availableEquipment) { item ->
+                    items(factions, key = { it.id }) { faction ->
+                        val isSelected = faction.id == selectedFactionId
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(1.dp, GoldAccent.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+                                .border(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) PrimaryCrimson else GoldAccent.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
                             colors = CardDefaults.cardColors(containerColor = DarkBackground),
-                            onClick = { onEquipmentSelected(item) }
+                            onClick = { onFactionSelected(faction.id) }
                         ) {
-                            Column(modifier = Modifier.padding(10.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(item.name, color = ParchmentText, fontWeight = FontWeight.Bold)
-                                    val costText = if (item.cost.currency == com.example.trenchcrusadetracker.domain.model.equipment.CurrencyType.DUCATS) {
-                                        "${item.cost.amount} Ducados"
-                                    } else {
-                                        "${item.cost.amount} Pts Gloria"
-                                    }
-                                    Text(costText, color = GoldAccent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = faction.name,
+                                        color = ParchmentText,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = faction.description,
+                                        color = ParchmentText.copy(alpha = 0.8f),
+                                        fontSize = 11.sp
+                                    )
+                                    Text(
+                                        text = "${faction.defaultStartingDucats} Ducados iniciales",
+                                        color = GoldAccent,
+                                        fontSize = 11.sp
+                                    )
                                 }
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(item.description, color = ParchmentText.copy(alpha = 0.8f), fontSize = 11.sp)
+                                if (isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Facción seleccionada",
+                                        tint = PrimaryCrimson
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
+                    Text("Cancelar", color = ParchmentText)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Diálogo para elegir la subfacción de una facción: la facción base (sin variante)
+ * o una de sus variantes registradas en [Faction.variants].
+ */
+@Composable
+private fun VariantSelectorDialog(
+    faction: Faction,
+    selectedVariantId: String?,
+    onVariantSelected: (String?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = SurfaceDark,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Subfacción de ${faction.name}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = PrimaryCrimson,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Elige la facción base o una de sus variantes.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = ParchmentText.copy(alpha = 0.8f)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.height(420.dp)
+                ) {
+                    item(key = "base") {
+                        SubfactionOptionCard(
+                            name = "${faction.name} (Base)",
+                            description = faction.description,
+                            ducats = faction.defaultStartingDucats,
+                            glory = faction.defaultStartingGloryPoints,
+                            rules = faction.specialRules,
+                            isSelected = selectedVariantId == null,
+                            onClick = { onVariantSelected(null) }
+                        )
+                    }
+                    items(faction.variants, key = { it.id }) { variant ->
+                        SubfactionOptionCard(
+                            name = variant.name,
+                            description = variant.description,
+                            ducats = variant.defaultStartingDucats,
+                            glory = variant.defaultStartingGloryPoints,
+                            rules = variant.specialRules,
+                            isSelected = variant.id == selectedVariantId,
+                            onClick = { onVariantSelected(variant.id) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(onClick = onDismiss, modifier = Modifier.align(Alignment.End)) {
+                    Text("Cancelar", color = ParchmentText)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Tarjeta seleccionable que muestra una subfacción, sus recursos iniciales y reglas especiales.
+ */
+@Composable
+private fun SubfactionOptionCard(
+    name: String,
+    description: String,
+    ducats: Int,
+    glory: Int,
+    rules: List<FactionRule>,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = if (isSelected) 2.dp else 1.dp,
+                color = if (isSelected) PrimaryCrimson else GoldAccent.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(8.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = DarkBackground),
+        onClick = onClick
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = name,
+                    color = ParchmentText,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isSelected) {
+                    Icon(Icons.Default.Check, contentDescription = "Seleccionada", tint = PrimaryCrimson)
+                }
+            }
+            Text(description, color = ParchmentText.copy(alpha = 0.8f), fontSize = 11.sp)
+            val gloryLabel = if (glory > 0) " · $glory Gloria" else ""
+            Text("$ducats Ducados iniciales$gloryLabel", color = GoldAccent, fontSize = 11.sp)
+            if (rules.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                rules.forEach { rule ->
+                    Text(
+                        text = "• ${rule.name}: ${rule.effectDescription}",
+                        color = ParchmentText.copy(alpha = 0.7f),
+                        fontSize = 10.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Diálogo de confirmación al cambiar de facción cuando ya hay unidades reclutadas.
+ * Cada facción tiene sus propias unidades, límites y restricciones, por lo que las
+ * unidades actuales deben descartarse antes de continuar.
+ */
+@Composable
+private fun ConfirmFactionChangeDialog(
+    factionName: String,
+    unitCount: Int,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = SurfaceDark,
+        title = {
+            Text(
+                text = "Cambiar de facción",
+                color = PrimaryCrimson,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Text(
+                text = "Ya tienes $unitCount unidad(es) reclutada(s). Cada facción tiene " +
+                    "sus propias unidades, límites y restricciones, por lo que al cambiar " +
+                    "a \"$factionName\" se borrarán todas las unidades actuales. " +
+                    "¿Deseas continuar?",
+                color = ParchmentText
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Sí, cambiar", color = PrimaryCrimson)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = ParchmentText)
+            }
+        }
+    )
+}
+
+/**
+ * Diálogo que muestra el equipamiento del modelo agrupado por secciones del Battlekit
+ * (Armas a Distancia, Granadas, Cuerpo a Cuerpo, Armaduras, Escudos, Equipo y Especiales).
+ * Cada sección tiene un botón "+" para agregar piezas de esa categoría.
+ */
+@Composable
+private fun EquipArsenalDialog(
+    member: WarbandMember,
+    availableEquipment: List<Equipment>,
+    onEquipmentSelected: (Equipment) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var pickingCategory by remember { mutableStateOf<BattlekitCategory?>(null) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = SurfaceDark,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Equipamiento de ${member.customName}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = PrimaryCrimson,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val selectedCategory = pickingCategory
+                if (selectedCategory == null) {
+                    // Vista por secciones del Battlekit
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.height(360.dp)
+                    ) {
+                        BattlekitCategory.values().forEach { category ->
+                            val equipped = member.battlekit.itemsInCategory(category)
+                            item(key = "header_${category.name}") {
+                                BattlekitSectionHeader(
+                                    title = categoryLabel(category),
+                                    canAdd = canAddToCategory(member, category),
+                                    onAddClick = { pickingCategory = category }
+                                )
+                            }
+                            if (equipped.isEmpty()) {
+                                item(key = "empty_${category.name}") {
+                                    Text(
+                                        text = "Sin asignar",
+                                        color = ParchmentText.copy(alpha = 0.4f),
+                                        fontSize = 11.sp,
+                                        modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                                    )
+                                }
+                            } else {
+                                items(equipped, key = { "${category.name}_${it.id}" }) { item ->
+                                    EquippedItemRow(item = item)
+                                }
+                            }
+                            item(key = "divider_${category.name}") {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp)
+                                        .background(GoldAccent.copy(alpha = 0.15f))
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    // Vista de selección de la categoría elegida
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = { pickingCategory = null }) {
+                            Text("‹ Volver", color = GoldAccent)
+                        }
+                        Text(
+                            text = categoryLabel(selectedCategory),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = PrimaryCrimson,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val options = availableEquipment.filter { it.category == selectedCategory }
+                    if (options.isEmpty()) {
+                        Text("No hay equipamiento disponible en esta sección.", color = ParchmentText)
+                    } else {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.height(320.dp)
+                        ) {
+                            items(options, key = { it.id }) { option ->
+                                EquipmentOptionCard(
+                                    item = option,
+                                    onClick = { onEquipmentSelected(option) }
+                                )
                             }
                         }
                     }
@@ -520,3 +936,143 @@ private fun EquipArsenalDialog(
         }
     }
 }
+
+/**
+ * Encabezado de sección con el botón "+" para agregar equipamiento de la categoría.
+ */
+@Composable
+private fun BattlekitSectionHeader(
+    title: String,
+    canAdd: Boolean,
+    onAddClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            color = PrimaryCrimson,
+            fontWeight = FontWeight.Bold
+        )
+        IconButton(onClick = onAddClick, enabled = canAdd) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Agregar a $title",
+                tint = if (canAdd) GoldAccent else ParchmentText.copy(alpha = 0.3f)
+            )
+        }
+    }
+}
+
+/**
+ * Fila que muestra una pieza de equipamiento ya asignada al modelo.
+ */
+@Composable
+private fun EquippedItemRow(item: Equipment) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, top = 4.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(item.name, color = ParchmentText, fontSize = 13.sp)
+        Text(
+            text = itemCostLabel(item),
+            color = GoldAccent,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+/**
+ * Tarjeta seleccionable con la información de una pieza de equipamiento disponible.
+ */
+@Composable
+private fun EquipmentOptionCard(
+    item: Equipment,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, GoldAccent.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+        colors = CardDefaults.cardColors(containerColor = DarkBackground),
+        onClick = onClick
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(item.name, color = ParchmentText, fontWeight = FontWeight.Bold)
+                Text(
+                    text = itemCostLabel(item),
+                    color = GoldAccent,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(item.description, color = ParchmentText.copy(alpha = 0.8f), fontSize = 11.sp)
+            if (!item.stipulations.isEmpty) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = item.stipulations.display(),
+                    color = GoldAccent.copy(alpha = 0.85f),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Indica si la sección admite agregar más piezas.
+ * Armaduras, Granadas y Escudos están limitadas a una pieza por el reglamento.
+ */
+private fun canAddToCategory(member: WarbandMember, category: BattlekitCategory): Boolean {
+    val singleSlot = category == BattlekitCategory.ARMOUR ||
+        category == BattlekitCategory.GRENADES ||
+        category == BattlekitCategory.SHIELDS
+    return !(singleSlot && member.battlekit.itemsInCategory(category).isNotEmpty())
+}
+
+/**
+ * Etiqueta en español de cada categoría del Battlekit.
+ */
+private fun categoryLabel(category: BattlekitCategory): String = when (category) {
+    BattlekitCategory.RANGED_WEAPONS -> "Armas a Distancia"
+    BattlekitCategory.GRENADES -> "Granadas"
+    BattlekitCategory.MELEE_WEAPONS -> "Armas Cuerpo a Cuerpo"
+    BattlekitCategory.ARMOUR -> "Armaduras"
+    BattlekitCategory.SHIELDS -> "Escudos"
+    BattlekitCategory.EQUIPMENT -> "Equipo"
+    BattlekitCategory.SPECIAL -> "Objetos Especiales"
+}
+
+/**
+ * Texto de costo de una pieza de equipamiento según su moneda.
+ */
+private fun itemCostLabel(item: Equipment): String =
+    if (item.cost.currency == CurrencyType.DUCATS) {
+        "${item.cost.amount} Ducados"
+    } else {
+        "${item.cost.amount} Pts Gloria"
+    }
+
+/**
+ * Selección pendiente de facción y subfacción a aplicar tras la confirmación del usuario.
+ * Un [variantId] nulo representa la facción base (sin variante).
+ */
+private data class FactionSelection(
+    val factionId: String,
+    val variantId: String?
+)
