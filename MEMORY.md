@@ -2,6 +2,11 @@
 
 Registro de cambios significativos para poder revertir si es necesario (regla 4 de AGENTS.md).
 
+> **Convención de informes:** todos los informes de sesión se guardan en la carpeta `informes/`
+> (en la raíz del proyecto, por encima de las demás carpetas) con el nombre
+> `INFORME_<AAAA-MM-DD>_<tema>.md`. `MEMORY.md` es el changelog resumido; `informes/` guarda el
+> detalle extendido. (Documentado en `app/sources/spec.md`.)
+
 ## 2026-10-08 — Refactor de dominio según ficha "La guardia del Tzar" (Warband-Example-Construction.pdf)
 
 Contexto: se leyó el PDF exportado por Trench Companion y se reestructuró el modelo de dominio para reflejar cómo se construye una Warband y un personaje en Trench Crusade.
@@ -221,3 +226,158 @@ Contexto: el usuario pidió registrar en MEMORY lo que falta por implementar de 
 
 ### Nota de restauración
 No se borró ni modificó código en esta entrada; solo se registró el estado pendiente de las facciones Fallen para reanudar trabajo futuro.
+
+## 2026-10-12 — Roster y armería propios por variante (Great Hunger, Dirge, Heretic variants, The Court)
+
+Contexto: se retomaron los pendientes registrados en la entrada 2026-10-09 (3). Se añadió soporte de roster/armería por variante y se implementaron los datos ya disponibles (Great Hunger, Dirge, Trench Ghosts, Knights of Avarice, Naval Raiders y las correcciones de The Court). Fuentes: `The-Great-Hunger-1.0.2.pdf`, `October-Rules-Review-2026.pdf`, `Warbands of Trench Crusade` y los suplementos, más los textos extraídos en `C:\Users\kmilo\AppData\Local\Temp\` (incl. `opencode\variant_armories\`).
+
+### Cambios realizados
+- `domain/model/faction/Faction.kt`: `FactionVariant` ahora acepta `units: List<WarbandMember> = emptyList()` (vacío = roster de la facción base) y `armoryId: String? = null` (null = armería de la facción base). Añadido import de `WarbandMember`.
+- `ui/screens/warband/WarbandCreationScreen.kt`: la armería se resuelve con `activeVariant.armoryId ?: selectedFactionId` (`remember(selectedFactionId, selectedVariantId)`) y el diálogo de unidades usa `activeVariant.units.takeIf { it.isNotEmpty() } ?: factionProvider.getAvailableUnits()`.
+- Nuevos rosters propios (`domain/faction/providers/`):
+    - `GreatHungerRoster.kt`: Matagot Hag (135, Leader), Butcher Knight (60, Elite), Desiccated Husk (55, Elite), Great Maw (130, Elite), Ravenous (35), Cradle Thrall (0👑/2☼), Gregori Gula (140, Flying).
+    - `BlackGrailRoster.kt`: `base()` (extraído de `BlackGrailFactionProvider`; añade **Parasitic Tick** a Corpse Guard, **Infested Carcasses +5👑** al Hound, **Maddening Buzzing +10👑** y **SKIRMISHER** al Herald) y `dirge()` (Executor 80 con Ranged +1/TOUGH, Bereaved Grail/Fly a 30 con Ranged +0, Plague Knight y Corpse Guard con Command Bereaved).
+    - `NavalRaidersRoster.kt`: Heretic Captain (80), Abyssal Commando (90), Drowned Chorister (65), Sea Hag (100), Heretic Raider (30), Wretched (25), Anointed Heretic Raider (95).
+- `BlackGrailFactionProvider.kt`: reducido; `getAvailableUnits()` delega en `BlackGrailRoster.base()`.
+- `WarbandVariants.kt`: conectados `units`/`armoryId` a Great Hunger, Dirge, Trench Ghosts, Knights of Avarice y Naval Raiders; reescritas las reglas de Naval Raiders (Fast as Lightning, Unseen Advance, Mercenaries) y renombrada a "Heretic Naval Raiders".
+- `domain/equipment/providers/FactionBattlekit.kt`:
+    - Correcciones de The Court: Serpent Assault Gun 50→45; Malebranche Sword 50→35 con keywords DEADLY/HEAVY; Torture Instrument 8→10; Headtaker (Ambush Weapon +2 INJURY MODIFIER).
+    - Nuevos items: Court (Fiendbound Gatling Gun, Iron Maiden Flail, Jaws of Iron, Chthonic Vessel, Tormentor Chain, 5 Goetic Powers), Great Hunger (Black Spot Rifle, Butcher Bayonet, Cup of Filth, Foetid Palanquin, Pestilent Fang, 7 Hunger Strains), Dirge (Broken Crown, Urn of the Bitter Ashes), Trench Ghosts (Sarcophagus Mine, Tank Palanquin), Knights of Avarice (Coin Hammer, Golden Calf Altar, Gas Bombs, Standard of Mammon, Tarnished Armour), Naval Raiders (Boarding Axe, Hull Drill, Leviathan Bell, Infernal Bomb, Shark Tooth Talisman, Wrecker's Torch).
+- `domain/equipment/providers/FactionArmories.kt`:
+    - `the_court` corregido (precios October) y ampliado con Fiendbound Gatling Gun, Iron Maiden Flail, Jaws of Iron, Chthonic Vessel, Tormentor Chain, Torture Instrument DEMONIC-only, Incendiary 15→10 Limit 2 y los 5 Goetic Powers base.
+    - Nuevas armerías: `black_grail_great_hunger`, `black_grail_dirge`, `heretic_trench_ghosts`, `heretic_knights_of_avarice`, `heretic_naval_raiders` (con SMG a 25👑, Incendiary 10👑, sin Binoculars, Reinforced Armour ELITE/Anointed-only, Soul Contract restringido a Raiders/Legionnaires).
+- `EquipmentCatalogTest.kt`: test de facciones pasa a `containsAll(baseFactions)` + claves de variante; nuevos tests de armerías de variante y correcciones de The Court.
+
+### Decisión de arquitectura
+- Se optó por resolver roster y armería por `armoryId`/`units` en `FactionVariant` en lugar de crear providers sueltos, manteniendo el patrón Open/Closed. Las armerías de variante son claves adicionales en el mismo `FactionArmories.byFactionId`.
+
+### Verificación
+- `.\gradlew.bat assembleDebug` → BUILD SUCCESSFUL.
+- `.\gradlew.bat testDebugUnitTest` → BUILD SUCCESSFUL.
+- Nota de entorno: `JAVA_HOME` debe apuntar a `C:\Program Files\Android\Android Studio\jbr` en esta máquina.
+
+### Pendiente / notas
+- **Heretic Legionnaire** (upgrade +10👑 sobre Heretic Trooper, +1 a Ranged o Melee, nunca más Legionnaires que Troopers) sigue sin unidad; sólo referenciado en la armería.
+- Restricciones de battlekit muy específicas por unidad (Death Commando = sólo Silenced Pistols/Tormentor Chains + Gas Grenades; Wretched ≤10👑 + ≥1 arma; Artillery Witch sin Ranged/Grenades; War Wolf sin kit) están en texto, no como lógica ejecutable.
+- Armerías de las 7 variantes de pecado del Court (pride/greed/lust/envy/gluttony/wrath/sloth) y de las variantes de New Antioch/Pilgrims/Sultanate aún no implementadas (hay datos extraídos en `Temp\opencode\variant_armories\` para retomarlas). Hoy las variantes Court reutilizan `the_court` y las de NA/TP/IS su facción base.
+- `NewAntiochArmoryProvider.kt` ya no existe (pendiente resuelto de la entrada anterior).
+- No se hizo commit; los cambios quedan en el árbol de trabajo.
+
+## 2026-10-12 (2) — Heretic Legionnaire + corrección de la clave de armería heretic
+
+Contexto: se eligió cerrar el pendiente del **Heretic Legionnaire** (Warbands of Trench Crusade p.111). Al revisarlo se descubrió un bug latente: la armería de los Heretic estaba registrada bajo la clave `"heretic_legions"` (plural) mientras el id de facción es `"heretic_legion"` (singular), por lo que `FactionArmoryRegistry.forFaction("heretic_legion")` nunca encontraba la tabla y caía silenciosamente al `DefaultFactionArmoryProvider`.
+
+### Cambios realizados
+- `domain/faction/providers/HereticLegionFactionProvider.kt`: añadidas dos entradas `TrooperMember` (misma unidad, perfiles alternativos para expresar la elección obligatoria del libro):
+    - `heretic_legionnaire_ranged` — "Heretic Legionnaire (Ranged)", 40👑, 6"/Infantry, Ranged +1 / Melee +0, keyword HERETIC.
+    - `heretic_legionnaire_melee` — "Heretic Legionnaire (Melee)", 40👑, 6"/Infantry, Melee +1 / Ranged +0, keyword HERETIC.
+    - Regla en texto: "Legionnaires of Hell: no puede haber más Heretic Legionnaires que Heretic Troopers" (upgrade = +10👑 sobre Heretic Trooper; el libro permite subir Ranged **o** Melee de 0 a +1).
+- `domain/equipment/providers/FactionArmories.kt`: la clave de la tabla heretic pasa de `"heretic_legions"` a `"heretic_legion"` para coincidir con `Faction.id` (arregla el fallback silencioso al arsenal genérico).
+- `EquipmentCatalogTest.kt`: `baseFactions` actualizado (`heretic_legions` → `heretic_legion`).
+- `FactionRepositoryTest.kt`: nuevo test `test heretic legionnaires upgrade the trooper profile` (coste 40 y perfiles Ranged/Melee esperados).
+
+### Decisión de modelado
+- El libro muestra un solo perfil "Heretic Legionnaire" con "See below" en Ranged/Melee y obliga a elegir +1 en uno de los dos. Como el reclutador actual es una lista sin selector de características, se representó como **dos entradas** equivalentes (Ranged/Melee) para poder materializar la elección. Documentado aquí por si se prefiere una única entrada con un selector en el futuro.
+
+### Verificación
+- `.\gradlew.bat testDebugUnitTest` → BUILD SUCCESSFUL.
+- `.\gradlew.bat assembleDebug` → BUILD SUCCESSFUL.
+- Nota de entorno: `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr`.
+
+### Pendiente / notas
+- La regla "no más Legionnaires que Troopers" queda como texto; no hay validación de conteo en la UI.
+- Restricciones de battlekit por unidad (Death Commando, Wretched, Artillery Witch, War Wolf) siguen sin ser lógica ejecutable.
+- Armerías de variantes de The Court (7 pecados) y de New Antioch/Pilgrims/Sultanate aún pendientes.
+- Las entradas de Legionnaire reutilizan la armería heretic; el id `heretic_legionnaire` (sin sufijo) no se usa, se usan `_ranged`/`_melee`.
+- No se hizo commit.
+
+## 2026-10-12 (3) — Black Grail: Plague Knight Ranks y reglas de Dirge
+
+Contexto: se continuó con Black Grail (Warbands of Trench Crusade pp.126-142). El pendiente principal era el sistema de **Plague Knight Ranks** (p.127), marcado como "no modelado". También se completaron las reglas de la variante Dirge of the Great Hegemon.
+
+### Cambios realizados
+- `domain/faction/providers/BlackGrailRoster.kt`: nuevo helper privado `plagueKnightRanks(extraSkills)` que devuelve las 4 entradas de rango (mismo patrón de "entrada por perfil" que el Heretic Legionnaire):
+    - `grail_plague_almoner` — "Plague Almoner", 70👑 (base 60 +10), Melee +2: reduce en 1 el coste en BLOOD/INFECTION MARKERS al convertir una Injury Roll en Bloodbath Roll.
+    - `grail_knight_companion_of_the_fly_ranged` — 65👑 (base 60 +5), Ranged +1 / Melee +2.
+    - `grail_knight_companion_of_the_fly_melee` — 65👑, Ranged +0 / Melee +3.
+    - `grail_knight_of_the_rotten_cross` — 65👑, Limit 1: puede comprar 1 arma a distancia o de melee de la armería de New Antioch o Heretic Legions.
+    - Los rangos se añaden a `base()` y a `dirge()` (en Dirge con la habilidad extra "Command Bereaved").
+- `domain/faction/providers/WarbandVariants.kt`: la variante Dirge ahora incluye las reglas que faltaban — The Bereaved, Dishonoured y Hegemon's Last Blessing — y se amplió The Executor y Hegemon's Will con su texto real.
+- `FactionRepositoryTest.kt`: nuevo test `test black grail exposes plague knight ranks` (costes, perfiles y unicidad de ids).
+
+### Verificación
+- `.\gradlew.bat testDebugUnitTest assembleDebug` → BUILD SUCCESSFUL.
+
+### Pendiente / notas
+- La armería del Black Grail base ya refleja las armas únicas; la restricción de battlekit por unidad del Herald (solo Ranged Weapons + Compound Eyes Helmet + Grail Devotee) sigue sin ser lógica ejecutable.
+- La regla "0-2 Plague Knights" / "1-3 si no hay Lord of Tumours" y "el Executor es obligatorio en Dirge" no se validan; quedan como texto.
+- Los rangos son add-ons de un Plague Knight; la app los representa como entradas independientes (un Plague Knight ya con el rango), no como modificadores del mismo modelo.
+- Armerías de variantes de The Court (7 pecados) y de New Antioch/Pilgrims/Sultanate aún pendientes.
+- No se hizo commit.
+
+## 2026-10-12 (4) — The Great Hunger: reglas reales, rangos de Butcher Knight y Vomitus
+
+Contexto: se continuó con la variante The Great Hunger (suplemento The-Great-Hunger-1.0.2.pdf). Se detectó que las reglas de la variante en `WarbandVariants` eran genéricas/inventadas y no coincidían con el suplemento; además faltaban los rangos propios de los Butcher Knights y el arma Vomitus.
+
+### Cambios realizados
+- `domain/faction/providers/WarbandVariants.kt`: la variante `black_grail_great_hunger` ahora tiene las reglas reales del suplemento (11 en total): Spawn of Gluttony, Eternal Appetence + sus 4 efectos (Agonised Churning, Ruinous Masticating, Spasmodic Wretching, Vile Craving), Butcher Knights, Cradle of Filth, Desiccated Husks, Excruciating Hunger y The Great Maw.
+- `domain/faction/providers/GreatHungerRoster.kt`:
+    - Añadidos los 3 rangos propios de Butcher Knight: `gh_butcher_king` (70👑), `gh_knight_companion_of_the_feast` (65👑) y `gh_knight_of_twin_cleavers` (65👑).
+    - `gh_butcher_knight` ya no lista los rangos como texto; ahora tiene la regla que los referencia.
+    - `gh_desiccated_husk`: añadido Parasitic Tick y notificado el keyword CRITICAL en Melee (sustituye Bodyguard por More Worm Than Man).
+- `domain/equipment/providers/FactionBattlekit.kt`: nueva arma única `gh_vomitus` (Vomitus, 40👑, tipo SPECIAL, 8", +1 INJURY MODIFIER / ASSAULT / INFECTION MARKERS; Torrent of Bile + Vile Ferment). Es el Unholy Gut de Gregori Gula.
+- `domain/equipment/providers/FactionArmories.kt`: `gh_vomitus` añadido a `black_grail_great_hunger` restringido a Gregori Gula.
+- Tests: `FactionRepositoryTest` (nuevo test de la variante Great Hunger y sus rangos) y `EquipmentCatalogTest` (comprueba `gh_vomitus` en el master).
+
+### Verificación
+- `.\gradlew.bat testDebugUnitTest assembleDebug` → BUILD SUCCESSFUL.
+
+### Pendiente / notas
+- Los efectos de Eternal Appetence y el resto de reglas quedan como texto; no hay lógica ejecutable de INFECTION MARKERS.
+- La restricción de battlekit de la Matagot Hag (solo Cup of Filth, Grail Devotees y/o Foetid Palanquin) y la de Gregori Gula (sin Battlekit salvo Vomitus) siguen sin ser lógica ejecutable.
+- El límite de Great Maw (solo si el resto de la banda ≥1000👑) no se valida.
+- Armerías de variantes de The Court (7 pecados) y de New Antioch/Pilgrims/Sultanate aún pendientes.
+- No se hizo commit.
+
+## 2026-10-12 (5) — Armerías de todas las variantes pendientes (Court 7 pecados, New Antioch, Trench Pilgrims, Iron Sultanate)
+
+Contexto: se cerró el pendiente recurrente de las armerías de variante. Se implementaron las tablas de equipo de las 18 variantes que aún reutilizaban la armería de su facción base, usando los datos ya extraídos en `C:\Users\kmilo\AppData\Local\Temp\opencode\variant_armories\` (`new_antioch.txt`, `sultanate_pilgrims.txt`, `standalone_books.txt`, `heretic_grail_court.txt`) y los perfiles creados en la entrada (4).
+
+### Cambios realizados
+- `domain/equipment/providers/FactionBattlekit.kt` (sesión previa a este registro, ya en el árbol): añadidos todos los perfiles únicos de Battlekit que faltaban para las variantes (Papal Crucifix, Lochaber Axe, Tank-Splitter Sword, Holy Smoke, shotel/agua bendita/anfarro/tabot de Abyssinia, kit de Red Brigade, kit de Sacred Affliction, armamento y módulos del Anchorite Shrine de Saint Methodius, Sacrificial Lamb del Tenth Plague, Bow of Alamut/Golden Khanjar/Hashashin Leaf de los Fida'i, Elixir of Al-Khidr/Fire Shield de House of Wisdom, y los 5 ítems de cada uno de los 7 pecados del Court).
+- `domain/equipment/providers/FactionArmories.kt` (refactor):
+    - Las 6 tablas base se extraen a `private val` (`newAntiochBase`, `trenchPilgrimsBase`, `ironSultanateBase`, `hereticLegionBase`, `blackGrailBase`, `courtBase`) sin cambiar su contenido (verificado contra el HEAD, salvo la clave `heretic_legions`→`heretic_legion` ya corregida en (2)).
+    - Nuevos helpers `List<ArmoryEntry>.update(id, amount?, currency, stip)` y `.removing(vararg ids)` para componer variantes por diferencia.
+    - Las variantes ya existentes (Great Hunger, Dirge, Trench Ghosts, Knights of Avarice, Naval Raiders) se extrajeron a `private val` equivalentes; su contenido no cambió.
+    - 18 nuevas armerías de variante y registro en `byFactionId`: `antioch_papal_states`, `antioch_eire_rangers`, `antioch_alba`, `antioch_prussia`, `antioch_abyssinia`, `antioch_red_brigade`, `pilgrim_sacred_affliction`, `pilgrim_methodius`, `pilgrim_tenth_plague`, `sultanate_fidai`, `sultanate_house_of_wisdom`, `court_pride`, `court_greed`, `court_lust`, `court_envy`, `court_gluttony`, `court_wrath`, `court_sloth`.
+- `domain/faction/providers/WarbandVariants.kt`: cableado `armoryId` en las 18 variantes anteriores (New Antioch, Trench Pilgrims, Iron Sultanate Fida'i/House of Wisdom, y los 7 pecados del Court). `sultanate_iron_wall` queda sin `armoryId` (usa la base `iron_sultanate`).
+- `EquipmentCatalogTest.kt`: la lista `variantArmories` ahora incluye las 18 nuevas claves (23 en total, incl. las 5 previas) y los tests de existencia/resolución al catálogo maestro las recorren todas.
+
+### Decisión de modelado
+- Se mantiene la composición por diferencias (`base + update + removing`) en vez de duplicar tablas completas, reduciendo el riesgo de divergencias y respetando el patrón Open/Closed: añadir una variante es añadir una lista + una entrada en `byFactionId` + su `armoryId`.
+- Limitación conocida: los precios con doble tarifa no modelables (p. ej. Iron Maiden Flail del Envy, que cuesta distinto para el Desecrated Saint) se aproximan a un único valor; documentado aquí.
+
+### Verificación
+- `.\gradlew.bat testDebugUnitTest` → BUILD SUCCESSFUL (suite completa).
+- `.\gradlew.bat assembleDebug` → BUILD SUCCESSFUL.
+- Nota de entorno: `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr`.
+
+### Pendiente / notas
+- Las nuevas armerías reutilizan el roster de su facción base (las variantes de NA/TP/IS/Court no tienen unidades propias aún; sólo Great Hunger/Dirge/Naval Raiders las tienen).
+- Restricciones de battlekit por unidad siguen en texto, no como lógica ejecutable.
+- Puntos 2 (restricciones de battlekit), 3 (validaciones de conteo) y 4 (lógica de marcadores) del plan general siguen pendientes.
+- No se hizo commit; los cambios quedan en el árbol de trabajo.
+
+## 2026-10-12 (6) — Convención de documentación: carpeta `informes/`
+
+Contexto: se definió una ubicación única para los informes de sesión.
+
+### Cambios realizados
+- Creada la carpeta `informes/` en la raíz del proyecto (por encima de las demás carpetas).
+- Movido el informe creado en la sesión anterior a `informes/INFORME_2026-10-12_ARMERIAS_VARIANTES.md` (antes estaba en la raíz).
+- Convención de nombre: `INFORME_<AAAA-MM-DD>_<tema>.md`.
+- `app/sources/spec.md`: nueva sección "Registro de informes (carpeta `informes/`)".
+- `MEMORY.md`: nota de convención al inicio del archivo.
+
+### Verificación
+- No aplica compilación (solo documentación). El código no se modificó en esta entrada.

@@ -29,7 +29,8 @@ internal object WarbandVariants {
                 FactionRule("rule_papal_lector", "Lector", "The Warband must include a Trench Cleric."),
                 FactionRule("rule_papal_supreme_blessing", "Supreme Blessing", "Elite models receive free BLESSING MARKERS."),
                 FactionRule("rule_papal_swiss_guard", "Swiss Guard", "Gains 4 ☼ per Reinforcement instead of the usual amount.")
-            )
+            ),
+            armoryId = "antioch_papal_states"
         ),
         FactionVariant(
             id = "antioch_eire_rangers",
@@ -40,7 +41,8 @@ internal object WarbandVariants {
                 FactionRule("rule_eire_berserker", "Berserker", "The Lieutenant or a Fianna may become a Berserker for +15 👑; cannot wear Armour, gains NEGATE FEAR."),
                 FactionRule("rule_eire_fianna", "Fianna", "Trench Pilgrims can gain INFILTRATOR and SKIRMISHER for +5 👑 each."),
                 FactionRule("rule_eire_hit_and_run", "Hit and Run", "Enemies suffer -1 DICE when attacking a Retreating Ranger.")
-            )
+            ),
+            armoryId = "antioch_eire_rangers"
         ),
         FactionVariant(
             id = "antioch_alba",
@@ -52,7 +54,8 @@ internal object WarbandVariants {
                 FactionRule("rule_alba_celtic", "Celtic Machine Armour", "Machine Armour keeps a Charge Bonus of D6\"."),
                 FactionRule("rule_alba_cold_steel", "Cold Steel", "Halve the cost of the first Melee Weapon purchased."),
                 FactionRule("rule_alba_highland", "Highland Strength", "The Lieutenant and Shock Troopers gain STRONG for free.")
-            )
+            ),
+            armoryId = "antioch_alba"
         ),
         FactionVariant(
             id = "antioch_prussia",
@@ -64,7 +67,8 @@ internal object WarbandVariants {
                 FactionRule("rule_prussia_forward", "Forward Positions", "Up to 2 Shock Troopers gain INFILTRATOR for +10 👑 each."),
                 FactionRule("rule_prussia_rapid", "Rapid Assault", "Lieutenant and Shock Troopers may take Rapid Assault for +5 👑 each."),
                 FactionRule("rule_prussia_equipment", "Specialised Equipment", "SMGs have Limit 4; Automatic Shotguns and Pistols lose ELITE-only; Machine Guns Limit 1.")
-            )
+            ),
+            armoryId = "antioch_prussia"
         ),
         FactionVariant(
             id = "antioch_abyssinia",
@@ -76,7 +80,8 @@ internal object WarbandVariants {
                 FactionRule("rule_abyssinia_holy", "Holy Warriors", "May include 0-1 Trench Cleric and 0-2 Holy Warriors with Blessed Psalm and Arise and be Healed! actions."),
                 FactionRule("rule_abyssinia_marksmanship", "Short-Range Marksmanship", "+1 DICE to Short Range attacks by the Lieutenant and Yeomen."),
                 FactionRule("rule_abyssinia_vanguard", "Vanguard Forces", "Cannot include Trench Moles; up to 4 Yeomen may gain Flanking for +5 👑 each.")
-            )
+            ),
+            armoryId = "antioch_abyssinia"
         ),
         FactionVariant(
             id = "antioch_red_brigade",
@@ -85,7 +90,8 @@ internal object WarbandVariants {
             specialRules = listOf(
                 FactionRule("rule_red_no_retreat", "No Retreat", "Models in a Red Brigade Warband cannot take a Retreat ACTION."),
                 FactionRule("rule_red_wear_tear", "Wear and Tear", "Starts each game with 1 BLOOD MARKER per 200 ducats of total Cost.")
-            )
+            ),
+            armoryId = "antioch_red_brigade"
         )
     )
 
@@ -101,7 +107,8 @@ internal object WarbandVariants {
                 FactionRule("rule_affliction_punishing", "Punishing Millstones", "+1 INJURY DICE for Melee Attacks against Down targets (except Ecclesiastic Prisoners)."),
                 FactionRule("rule_affliction_reliquary", "Reliquary Armoury", "Holy Icon Shields cost 20 👑 and lose the (ELITE only) restriction."),
                 FactionRule("rule_affliction_wrath_god", "Wrath of God", "Up to 1 Castigator/Pilgrim/Martyr can take Wrath of God for 15 👑.")
-            )
+            ),
+            armoryId = "pilgrim_sacred_affliction"
         ),
         FactionVariant(
             id = "pilgrim_methodius",
@@ -111,7 +118,8 @@ internal object WarbandVariants {
                 FactionRule("rule_methodius_armoury", "Anchorite Armoury", "Anchorite Shrines gain Ranged +1 and access to the variant armoury."),
                 FactionRule("rule_methodius_anchorite", "Anchorite", "May include up to 2 Anchorite Shrines."),
                 FactionRule("rule_methodius_chaste", "Chaste", "All Stigmatic Nuns must have Standard Armour; no more than 3 may be fielded.")
-            )
+            ),
+            armoryId = "pilgrim_methodius"
         ),
         FactionVariant(
             id = "pilgrim_tenth_plague",
@@ -123,7 +131,8 @@ internal object WarbandVariants {
                 FactionRule("rule_plague_favour", "Favour of the Lord", "At the start of each Turn, place 1 BLESSING MARKER next to a model."),
                 FactionRule("rule_plague_heaven", "Heaven Awaits", "Trench Pilgrims cannot be resurrected as Martyr-Penitents."),
                 FactionRule("rule_plague_unclean", "The Unclean", "The Warband can have at most 0-2 Ecclesiastic Prisoners.")
-            )
+            ),
+            armoryId = "pilgrim_tenth_plague"
         )
     )
 
@@ -136,7 +145,8 @@ internal object WarbandVariants {
             specialRules = listOf(
                 FactionRule("rule_fidai_alamut_alone", "Alamut Alone", "Cannot include a Yüzbaşı, Jabirean Alchemist, Janissaries, Lions of Jabir or Brazen Bulls."),
                 FactionRule("rule_fidai_art", "Art of Assassination", "Each Assassin may take one unique ability (Hallucinogen Disguise 20 👑, Mirage of Time 15 👑, ...).")
-            )
+            ),
+            armoryId = "sultanate_fidai"
         ),
         FactionVariant(
             id = "sultanate_house_of_wisdom",
@@ -146,7 +156,8 @@ internal object WarbandVariants {
                 FactionRule("rule_wisdom_alchemists", "Alchemists", "The Warband must include 1-2 Jabirean Alchemists; Alchemist Armour has Limit 2."),
                 FactionRule("rule_wisdom_kavasses", "Kavasses", "Up to 3 Azebs may gain Melee +1 DICE for +5 👑 each."),
                 FactionRule("rule_wisdom_secrets", "Secrets", "Each Alchemist may take one unique ability (Medicine 15 👑, Cartography 20 👑, Takwin 20 👑).")
-            )
+            ),
+            armoryId = "sultanate_house_of_wisdom"
         ),
         FactionVariant(
             id = "sultanate_iron_wall",
@@ -210,10 +221,13 @@ internal object WarbandVariants {
             name = "Dirge of the Great Hegemon",
             description = "A profane funeral procession of the corruption-ridden echoes of a fallen Hegemon.",
             specialRules = listOf(
-                FactionRule("rule_dirge_executor", "The Executor", "The Warband must include 1 Executor (uses the Plague Knight entry with Ranged +1, TOUGH, 80 👑)."),
+                FactionRule("rule_dirge_executor", "The Executor", "The Warband must include 1 Executor (uses the Plague Knight entry with Ranged +1, TOUGH, 80 👑). The Warband can still include 0-2 Plague Knights."),
                 FactionRule("rule_dirge_fallen", "The Fallen", "Cannot include a Lord of Tumours or an Amalgam."),
                 FactionRule("rule_dirge_lost", "The Lost", "May include 0-2 Hounds of the Black Grail and 0-2 Heralds of Beelzebub."),
-                FactionRule("rule_dirge_will", "Hegemon's Will", "An Executor or Plague Knight may take a Command Bereaved ACTION to direct nearby Bereaved.")
+                FactionRule("rule_dirge_bereaved", "The Bereaved", "Grail Thralls and Fly Thralls are called the Bereaved: Ranged +0 and a cost of 30 👑, and may take Ranged Weapons, Grenades, a Musical Instrument or a Troop Flag."),
+                FactionRule("rule_dirge_dishonoured", "Dishonoured", "Models cannot have Beelzebub's Axe or a Black Grail Shield."),
+                FactionRule("rule_dirge_blessing", "Hegemon's Last Blessing", "Putrid Shotguns have a Limit of 3, and Viscera Cannon have a Limit of 3 and lose the ELITE only stipulation."),
+                FactionRule("rule_dirge_will", "Hegemon's Will", "An Executor or Plague Knight may take a Command Bereaved ACTION: remove any number of INFECTION MARKERS from enemy models and issue that many Commands (Charge/Fight/Move/Shoot) to a Bereaved within 18\".")
             ),
             units = BlackGrailRoster.dirge(),
             armoryId = "black_grail_dirge"
@@ -223,8 +237,17 @@ internal object WarbandVariants {
             name = "The Great Hunger",
             description = "A ravenous Black Grail offshoot that devours all in its path.",
             specialRules = listOf(
-                FactionRule("rule_hunger_devour", "Devouring Swarm", "The Great Hunger prioritises the consumption of the living."),
-                FactionRule("rule_hunger_infection", "Rampant Infection", "Spreads INFECTION MARKERS with even greater speed.")
+                FactionRule("rule_hunger_spawn", "Spawn of Gluttony", "A Great Hunger Warband must include 1 Matagot Hag. It cannot include a Lord of Tumours, Corpse Guards, Grail Thralls, Heralds of Beelzebub or an Amalgam."),
+                FactionRule("rule_hunger_appetence", "Eternal Appetence", "At the start of each Turn, choose one Hunger effect for the Warband that lasts until the end of the Turn."),
+                FactionRule("rule_hunger_agonised", "Agonised Churning", "When activating a friendly model within 8\" of a friendly Matagot Hag that has 2+ INFECTION MARKERS: remove 2 markers and place them next to an enemy within 1\" (not ARTIFICIAL or DEMONIC)."),
+                FactionRule("rule_hunger_ruinous", "Ruinous Masticating", "At the start of the Turn, place 1 INFECTION MARKER next to each friendly model within 8\" of a Matagot Hag. Opponents cannot spend INFECTION MARKERS for -DICE on Melee attacks against a model with 2+ markers."),
+                FactionRule("rule_hunger_spasmodic", "Spasmodic Wretching", "At the start of the Turn, place 1 INFECTION MARKER next to each friendly model within 8\" of a Matagot Hag. Ranged attacks targeting friendly models with 2+ markers suffer -1 DICE."),
+                FactionRule("rule_hunger_vile", "Vile Craving", "When activating a friendly model within 8\" of a friendly Matagot Hag that has 2+ INFECTION MARKERS: remove 2 markers and move the model up to half its Movement (max 4\") towards the nearest enemy."),
+                FactionRule("rule_hunger_butchers", "Butcher Knights", "May include 0-2 Plague Knights with the Ravenous Infection ability at no extra cost; they may only take the Butcher King, Knight Companion of the Feast or Knight of Twin Cleavers ranks."),
+                FactionRule("rule_hunger_cradle", "Cradle of Filth", "May include 0-3 Cradle Thralls (use the Ravenous entry, gain INFILTRATOR, cost 2 ☼; they do not count towards Maximum Field Strength)."),
+                FactionRule("rule_hunger_husks", "Desiccated Husks", "May include 0-2 Desiccated Husks (use the Corpse Guard entry, Melee gains CRITICAL, replace Bodyguard with More Worm Than Man)."),
+                FactionRule("rule_hunger_excruciating", "Excruciating Hunger", "Models cannot have Beelzebub's Axe, Black Grail Shields, Bolt-Action Rifles, Blunderbusses, Compound Eyes Helmets, Corruption Belchers, Gas Grenades, Infested Rifles, Machine Guns, Musical Instruments, Muskets, Pistols, Troop Flags or Viscera Cannons."),
+                FactionRule("rule_hunger_maw", "The Great Maw", "If the rest of the Warband costs 1000 👑 or more, it may recruit 0-1 Great Maws (use the Lord of Tumours entry without the LEADER Keyword).")
             ),
             units = GreatHungerRoster.units(),
             armoryId = "black_grail_great_hunger"
@@ -241,7 +264,8 @@ internal object WarbandVariants {
                 FactionRule("rule_pride_burning_shame", "Burning Shame", "An enemy can place a BLESSING MARKER if a Pride model retreats."),
                 FactionRule("rule_pride_non_pavebo", "Non Pavebo", "Lost Mortal Suffering; ELITE models in Open terrain gain 2 SIN MARKERS when they Activate."),
                 FactionRule("rule_pride_proud_standard", "Proud Standard", "While a Troop Flag is held, lower the Critical Success threshold by 1.")
-            )
+            ),
+            armoryId = "court_pride"
         ),
         FactionVariant(
             id = "court_wrath",
@@ -250,7 +274,8 @@ internal object WarbandVariants {
             specialRules = listOf(
                 FactionRule("rule_wrath_exterminans", "Exterminans Omnium", "Lost Mortal Suffering; gain SIN MARKERS when FIRE attacks wound enemies."),
                 FactionRule("rule_wrath_hellfire_spit", "Hellfire Spit", "Pit Locusts with 2+ SIN MARKERS can make a 4\" FIRE Ranged Attack.")
-            )
+            ),
+            armoryId = "court_wrath"
         ),
         FactionVariant(
             id = "court_envy",
@@ -260,7 +285,8 @@ internal object WarbandVariants {
                 FactionRule("rule_envy_petty_noble", "Petty Noble", "Each Turn a SIN MARKER is placed on the Hell Knight with the fewest SIN MARKERS."),
                 FactionRule("rule_envy_envious_eyes", "Envious Eyes", "Add 2 pieces of Battlekit from New Antioch, Pilgrims, Sultanate or Heretic Armouries to yours."),
                 FactionRule("rule_envy_potestas_negata", "Potestas Negata", "Lost Mortal Suffering; DEMONIC allies gain SIN MARKERS when enemies are taken Down.")
-            )
+            ),
+            armoryId = "court_envy"
         ),
         FactionVariant(
             id = "court_lust",
@@ -269,7 +295,8 @@ internal object WarbandVariants {
             specialRules = listOf(
                 FactionRule("rule_lust_vetiti_voluptas", "Vetiti Voluptas", "Lost Mortal Suffering; SIN MARKERS can fuel Goetic Spells on any model."),
                 FactionRule("rule_lust_no_armour", "Lustful Yoke Fiends", "Yoke Fiends without Restraining Muzzles cannot wear Armour and weaken nearby enemies.")
-            )
+            ),
+            armoryId = "court_lust"
         ),
         FactionVariant(
             id = "court_greed",
@@ -279,7 +306,8 @@ internal object WarbandVariants {
                 FactionRule("rule_greed_avaritian_audit", "Avaritian Audit", "Lost Mortal Suffering; gain SIN MARKERS via the Weregild Threshold each Turn."),
                 FactionRule("rule_greed_mammon", "Mammonite Trade Network", "Sell 1 piece of Battlekit for full price each Quartermaster Step."),
                 FactionRule("rule_greed_50ducats", "Conspicuous Wealth", "Elites and Yoke Fiends must have at least 50 👑 of Battlekit.")
-            )
+            ),
+            armoryId = "court_greed"
         ),
         FactionVariant(
             id = "court_gluttony",
@@ -289,7 +317,8 @@ internal object WarbandVariants {
                 FactionRule("rule_gluttony_conspicuous", "Conspicuous Consumption", "The most expensive model starts the first Turn with 2 SIN MARKERS."),
                 FactionRule("rule_gluttony_omnia_devoranda", "Omnia Devoranda", "Lost Mortal Suffering; gain SIN MARKERS when a DEMONIC model takes foes Down."),
                 FactionRule("rule_gluttony_overindulgence", "Overindulgence", "Spend the maximum possible amount of BLOOD MARKERS.")
-            )
+            ),
+            armoryId = "court_gluttony"
         ),
         FactionVariant(
             id = "court_sloth",
@@ -299,7 +328,8 @@ internal object WarbandVariants {
                 FactionRule("rule_sloth_taedium", "Taedium Vitae", "Lost Mortal Suffering; gain SIN MARKERS by refusing to Activate."),
                 FactionRule("rule_sloth_morphean", "Morphean Mind", "May give up Initiative to choose a foe that cannot be Activated first."),
                 FactionRule("rule_sloth_witch_knight", "Witch Knight", "Hell Knights have Ranged +1 DICE and an extra Goetic Power.")
-            )
+            ),
+            armoryId = "court_sloth"
         )
     )
 }

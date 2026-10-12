@@ -95,6 +95,67 @@ class FactionRepositoryTest {
     }
 
     @Test
+    fun `test black grail exposes plague knight ranks`() {
+        val repository = FactionRepositoryImpl()
+        val provider = repository.getProviderByFactionId("black_grail")
+        assertNotNull(provider)
+
+        val units = provider?.getAvailableUnits() ?: emptyList()
+        val ids = units.map { it.id }
+        assertEquals(ids.size, ids.toSet().size)
+
+        assertEquals(70, units.firstOrNull { it.id == "grail_plague_almoner" }?.baseCostInDucats)
+        assertEquals(65, units.firstOrNull { it.id == "grail_knight_companion_of_the_fly_ranged" }?.baseCostInDucats)
+        assertEquals(65, units.firstOrNull { it.id == "grail_knight_companion_of_the_fly_melee" }?.baseCostInDucats)
+        assertEquals(65, units.firstOrNull { it.id == "grail_knight_of_the_rotten_cross" }?.baseCostInDucats)
+        assertEquals(1, units.firstOrNull { it.id == "grail_knight_companion_of_the_fly_ranged" }?.baseStats?.ranged)
+        assertEquals(3, units.firstOrNull { it.id == "grail_knight_companion_of_the_fly_melee" }?.baseStats?.melee)
+    }
+
+    @Test
+    fun `test great hunger variant exposes its roster and butcher ranks`() {
+        val repository = FactionRepositoryImpl()
+        val blackGrail = repository.getFactionById("black_grail")
+        assertNotNull(blackGrail)
+
+        val greatHunger = blackGrail?.variants?.find { it.id == "black_grail_great_hunger" }
+        assertNotNull(greatHunger)
+        val units = greatHunger?.units ?: emptyList()
+
+        assertTrue(units.any { it.id == "gh_matagot_hag" })
+        assertTrue(units.any { it.id == "gh_ravenous" })
+        assertEquals(70, units.firstOrNull { it.id == "gh_butcher_king" }?.baseCostInDucats)
+        assertEquals(65, units.firstOrNull { it.id == "gh_knight_companion_of_the_feast" }?.baseCostInDucats)
+        assertEquals(65, units.firstOrNull { it.id == "gh_knight_of_twin_cleavers" }?.baseCostInDucats)
+        assertEquals(2, units.firstOrNull { it.id == "gh_matagot_hag" }?.baseStats?.melee)
+
+        val ids = units.map { it.id }
+        assertEquals(ids.size, ids.toSet().size)
+    }
+
+    @Test
+    fun `test heretic legionnaires upgrade the trooper profile`() {
+        val repository = FactionRepositoryImpl()
+        val provider = repository.getProviderByFactionId("heretic_legion")
+        assertNotNull(provider)
+
+        val units = provider?.getAvailableUnits() ?: emptyList()
+        val trooper = units.firstOrNull { it.id == "heretic_trooper" }
+        val ranged = units.firstOrNull { it.id == "heretic_legionnaire_ranged" }
+        val melee = units.firstOrNull { it.id == "heretic_legionnaire_melee" }
+
+        assertNotNull(trooper)
+        assertNotNull(ranged)
+        assertNotNull(melee)
+        assertEquals(40, ranged?.baseCostInDucats)
+        assertEquals(40, melee?.baseCostInDucats)
+        assertEquals(1, ranged?.baseStats?.ranged)
+        assertEquals(0, ranged?.baseStats?.melee)
+        assertEquals(1, melee?.baseStats?.melee)
+        assertEquals(0, melee?.baseStats?.ranged)
+    }
+
+    @Test
     fun `test unit movement speeds vary across models`() {
         val repository = FactionRepositoryImpl()
         val factions = repository.getAllFactions()

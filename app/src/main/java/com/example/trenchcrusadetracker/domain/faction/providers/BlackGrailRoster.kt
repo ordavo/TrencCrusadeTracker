@@ -16,6 +16,51 @@ import com.example.trenchcrusadetracker.domain.model.warband.WarbandMember
  */
 internal object BlackGrailRoster {
 
+    /**
+     * Plague Knight Ranks (Warbands of Trench Crusade, p.127).
+     * Cada Plague Knight puede recibir uno de estos rangos. Se modelan como entradas
+     * propias (misma unidad con el rango) para poder reclutarlas desde el selector,
+     * igual que se hizo con el Heretic Legionnaire.
+     */
+    private fun plagueKnightRanks(extraSkills: List<String> = emptyList()): List<WarbandMember> = listOf(
+        EliteMember(
+            id = "grail_plague_almoner",
+            customName = "Plague Almoner",
+            baseStats = ModelStats(movement = 6, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 70,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Undead Fortitude", "Plague Almoner") + extraSkills,
+            specialRules = listOf("Plague Almoner: al convertir una Injury Roll en Bloodbath Roll con este Plague Knight, el coste en BLOOD/INFECTION MARKERS se reduce en 1.")
+        ),
+        EliteMember(
+            id = "grail_knight_companion_of_the_fly_ranged",
+            customName = "Knight Companion of the Fly (Ranged)",
+            baseStats = ModelStats(movement = 6, melee = 2, ranged = 1, armor = 0, maxWounds = 1),
+            baseCostInDucats = 65,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Undead Fortitude", "Knight Companion of the Fly") + extraSkills,
+            specialRules = listOf("Knight Companion of the Fly: +1 DICE a Ranged o Melee (se elige; aquí Ranged).")
+        ),
+        EliteMember(
+            id = "grail_knight_companion_of_the_fly_melee",
+            customName = "Knight Companion of the Fly (Melee)",
+            baseStats = ModelStats(movement = 6, melee = 3, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 65,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Undead Fortitude", "Knight Companion of the Fly") + extraSkills,
+            specialRules = listOf("Knight Companion of the Fly: +1 DICE a Ranged o Melee (se elige; aquí Melee).")
+        ),
+        EliteMember(
+            id = "grail_knight_of_the_rotten_cross",
+            customName = "Knight of the Rotten Cross",
+            baseStats = ModelStats(movement = 6, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 65,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Undead Fortitude", "Knight of the Rotten Cross") + extraSkills,
+            specialRules = listOf("Knight of the Rotten Cross (Limit 1): puede comprar 1 arma a distancia o de melee de la armería de New Antioch o Heretic Legions.")
+        )
+    )
+
     fun base(): List<WarbandMember> = listOf(
         LeaderMember(
             id = "grail_lord_of_tumours",
@@ -81,7 +126,7 @@ internal object BlackGrailRoster {
             keywords = listOf("BLACK GRAIL", "FEAR", "NEGATE GAS", "STRONG", "TOUGH"),
             specialRules = listOf("Six-armed Monstrosity", "Corpulent", "Trample", "Unstoppable", "Undead Fortitude")
         )
-    )
+    ) + plagueKnightRanks()
 
     /**
      * Roster de la variante "Dirge of the Great Hegemon".
@@ -145,5 +190,5 @@ internal object BlackGrailRoster {
             keywords = listOf("BLACK GRAIL", "FEAR", "NEGATE GAS", "SKIRMISHER"),
             specialRules = listOf("Infected Proboscis", "Maddening Buzzing (+10 Ducados)")
         )
-    )
+    ) + plagueKnightRanks(listOf("Command Bereaved"))
 }

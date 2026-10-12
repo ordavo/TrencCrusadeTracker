@@ -32,7 +32,36 @@ internal object GreatHungerRoster {
             baseStats = ModelStats(movement = 6, movementType = MovementType.INFANTRY, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
             baseCostInDucats = 60,
             keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
-            specialSkills = listOf("Ravenous Infection", "Plague Knight Ranks (Butcher King / Knight Companion of the Feast / Knight of Twin Cleavers)", "Undead Fortitude")
+            specialSkills = listOf("Ravenous Infection", "Undead Fortitude"),
+            specialRules = listOf("Butcher Knights: puede recibir uno de los rangos propios del Great Hunger (Butcher King, Knight Companion of the Feast o Knight of Twin Cleavers).")
+        ),
+        // Plague Knight Ranks propios del Great Hunger (pp.6 del suplemento).
+        EliteMember(
+            id = "gh_butcher_king",
+            customName = "Butcher King",
+            baseStats = ModelStats(movement = 6, movementType = MovementType.INFANTRY, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 70,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Ravenous Infection", "Butcher King", "Undead Fortitude"),
+            specialRules = listOf("Butcher King: al final de la batalla, si no está Out of Action y ha eliminado al menos un enemigo en Melee, gana 1 ☼.")
+        ),
+        EliteMember(
+            id = "gh_knight_companion_of_the_feast",
+            customName = "Knight Companion of the Feast",
+            baseStats = ModelStats(movement = 6, movementType = MovementType.INFANTRY, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 65,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Ravenous Infection", "Knight Companion of the Feast", "Undead Fortitude"),
+            specialRules = listOf("Knight Companion of the Feast: +1 DICE al Risky Success Roll de una Ravenous Infection ACTION de un aliado a 3\".")
+        ),
+        EliteMember(
+            id = "gh_knight_of_twin_cleavers",
+            customName = "Knight of Twin Cleavers",
+            baseStats = ModelStats(movement = 6, movementType = MovementType.INFANTRY, melee = 2, ranged = 0, armor = 0, maxWounds = 1),
+            baseCostInDucats = 65,
+            keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS", "STRONG"),
+            specialSkills = listOf("Ravenous Infection", "Knight of Twin Cleavers", "Undead Fortitude"),
+            specialRules = listOf("Knight of Twin Cleavers: tiene IGNORE OFF-HAND y sus Melee Attacks tienen el keyword SHRAPNEL.")
         ),
         EliteMember(
             id = "gh_desiccated_husk",
@@ -40,7 +69,8 @@ internal object GreatHungerRoster {
             baseStats = ModelStats(movement = 6, movementType = MovementType.INFANTRY, melee = 1, ranged = 0, armor = 0, maxWounds = 1),
             baseCostInDucats = 55,
             keywords = listOf("BLACK GRAIL", "ELITE", "FEAR", "NEGATE GAS"),
-            specialSkills = listOf("More Worm Than Man", "Undead Fortitude")
+            specialSkills = listOf("More Worm Than Man", "Parasitic Tick", "Undead Fortitude"),
+            specialRules = listOf("Desiccated Husk: usa la entrada Corpse Guard; sus Melee Attacks tienen el keyword CRITICAL y sustituye Bodyguard por More Worm Than Man.")
         ),
         EliteMember(
             id = "gh_great_maw",

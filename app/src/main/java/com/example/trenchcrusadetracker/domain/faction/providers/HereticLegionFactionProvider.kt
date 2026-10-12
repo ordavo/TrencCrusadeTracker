@@ -71,6 +71,25 @@ class HereticLegionFactionProvider : FactionProvider {
                 baseCostInDucats = 30,
                 keywords = listOf("HERETIC")
             ),
+            // Legionnaires of Hell (p.111): un Heretic Trooper puede ascender a Heretic
+            // Legionnaire por +10 Ducados, subiendo Ranged O Melee de 0 a +1. Se modela
+            // como dos entradas equivalentes para poder expresar la elección de perfil.
+            TrooperMember(
+                id = "heretic_legionnaire_ranged",
+                customName = "Heretic Legionnaire (Ranged)",
+                baseStats = ModelStats(movement = 6, melee = 0, ranged = 1, armor = 0, maxWounds = 1),
+                baseCostInDucats = 40,
+                keywords = listOf("HERETIC"),
+                specialRules = listOf("Legionnaires of Hell: no puede haber más Heretic Legionnaires que Heretic Troopers")
+            ),
+            TrooperMember(
+                id = "heretic_legionnaire_melee",
+                customName = "Heretic Legionnaire (Melee)",
+                baseStats = ModelStats(movement = 6, melee = 1, ranged = 0, armor = 0, maxWounds = 1),
+                baseCostInDucats = 40,
+                keywords = listOf("HERETIC"),
+                specialRules = listOf("Legionnaires of Hell: no puede haber más Heretic Legionnaires que Heretic Troopers")
+            ),
             TrooperMember(
                 id = "heretic_war_wolf",
                 customName = "War Wolf Assault Beast",

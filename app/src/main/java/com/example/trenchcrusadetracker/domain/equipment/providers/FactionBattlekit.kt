@@ -373,6 +373,13 @@ object FactionBattlekit {
             type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee, keywords = listOf("+1 INJURY MODIFIER", "HEAVY"),
             specialRules = listOf("Gnashing Blow: coloca 1 INFECTION MARKER al causar BLOOD MARKERS.", "Rotten Splinters: Critical Success otorga IGNORE ARMOUR.")
         ),
+        Equipment.RangedWeapon(
+            id = "gh_vomitus", name = "Vomitus",
+            cost = ducats(40), description = "Arma única de Gregori Gula (Unholy Gut): un torrente de bilis que empapa todo a su paso.",
+            type = BattlekitType.SPECIAL, range = WeaponRange.Ranged(8),
+            keywords = listOf("+1 INJURY MODIFIER", "ASSAULT", "INFECTION MARKERS"),
+            specialRules = listOf("Torrent of Bile: no hace Success Roll; mide una línea de 1mm x 8\" y haz Injury Roll a cada modelo tocado.", "Vile Ferment: puedes retirar 2 INFECTION MARKERS del Gregori Gula para dar +1 INJURY MODIFIER a los Injury Rolls del ataque.")
+        ),
         Equipment.SpecialItem(
             id = "gh_strain_devouring_jaws", name = "Devouring Jaws (Hunger Strain)",
             cost = glory(2), description = "Cepa del Hambre que otorga una acción de Devorar cuerpo a cuerpo.",
@@ -502,6 +509,437 @@ object FactionBattlekit {
             id = "hl_wreckers_torch", name = "Wrecker's Torch",
             cost = ducats(15), description = "Antorcha alimentada por los fuegos del río Phlegethon, arde sin fin.",
             type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee, keywords = listOf("ARMOUR PIERCING", "BLOCK", "CUMBERSOME", "FIRE")
+        ),
+
+        // ==================== PAPAL STATES (New Antioch variant) ====================
+        Equipment.SpecialItem(
+            id = "na_papal_crucifix", name = "Supreme Pontiff's Crucifix",
+            cost = glory(3), description = "Reliquia sagrada bendecida por el Supremo Pontífice que inspira a su portador.",
+            specialRules = listOf("Inspiring Relic: el portador no termina su activación tras fallar una Risky Success Roll.")
+        ),
+
+        // ==================== KINGDOM OF ALBA (New Antioch variant) ====================
+        Equipment.MeleeWeapon(
+            id = "na_alba_lochaber_axe", name = "Lochaber Axe",
+            cost = ducats(20), description = "Arma de Alba que combina la fuerza de un hacha de batalla con la defensa de una pica.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+2 INJURY DICE", "BLOCK", "CRITICAL", "CUMBERSOME", "HEAVY")
+        ),
+
+        // ==================== STOSSTRUPPEN (New Antioch variant) ====================
+        Equipment.MeleeWeapon(
+            id = "na_prussia_tank_splitter_sword", name = "Tank-Splitter Sword",
+            cost = ducats(15), description = "Espadas legendarias de la Gardekorps tratadas para fundir blindajes.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY DICE", "CRITICAL", "CUMBERSOME"),
+            specialRules = listOf("Melt Armour: un dado se fija en '6' si el objetivo lleva armadura, escudo o ARM -1 o mejor.")
+        ),
+        Equipment.Gear(
+            id = "na_prussia_holy_smoke", name = "Holy Smoke",
+            cost = ducats(15), description = "Incienso adictivo inhalado antes de la batalla para ganar resiliencia.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Chemical Incense: al desplegar, NEGATE FEAR y -1 INJURY DICE el resto de la partida.")
+        ),
+
+        // ==================== ABYSSINIA (New Antioch variant) ====================
+        Equipment.MeleeWeapon(
+            id = "na_abyssinia_shotel", name = "Shotel",
+            cost = ducats(5), description = "Espada curva en forma de hoz del guerrero-élite etíope, hecha para alcanzar tras los escudos.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("CRITICAL"),
+            specialRules = listOf("Bypass Shield: ignora los -INJURY DICE/MODIFIERS de Escudos en ataques de melee.")
+        ),
+        Equipment.Gear(
+            id = "na_abyssinia_holy_water", name = "Holy Water of Lalibela",
+            cost = ducats(3), description = "Frascos de agua bendita de las iglesias excavadas en la roca de Lalibela.",
+            specialRules = listOf("Healing Waters: +1 DICE al retirar BLOOD/INFECTION MARKERS de un modelo.")
+        ),
+        Equipment.Gear(
+            id = "na_abyssinia_anfarro", name = "Anfarro (Warriors Crown)",
+            cost = ducats(10), description = "Corona de crin de león concedida por el Emperador como honor y valentía.",
+            keywords = listOf("NEGATE FEAR"),
+            specialRules = listOf("Token of Honour: +1 DICE a la característica de Melee del portador.")
+        ),
+        Equipment.SpecialItem(
+            id = "na_abyssinia_tabot", name = "Tabot",
+            cost = glory(4), description = "Réplica bendita del Arca de la Alianza portada por el sacerdote que acompaña a la fuerza.",
+            specialRules = listOf("Virtuous Rewards: coloca 1 BLESSING MARKER cuando una acción aliada retire BLOOD/INFECTION MARKERS.")
+        ),
+
+        // ==================== RED BRIGADE (New Antioch variant) ====================
+        Equipment.Gear(
+            id = "na_red_blood_cloak", name = "Blood Cloak",
+            cost = ducats(5), description = "Capas rojas entregadas a los veteranos que sobrevivieron a los asaltos enemigos.",
+            keywords = listOf("SKIRMISHER")
+        ),
+        Equipment.MeleeWeapon(
+            id = "na_red_banner", name = "Red Banner",
+            cost = glory(2), description = "Estandarte remendado hecho con la capa ensangrentada de San Ernesto.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("BLOCK", "HELD"),
+            specialRules = listOf("Blood of Martyrs: +2 DICE a los chequeos de Moral mientras donde y su portador no esté Down/Out.")
+        ),
+        Equipment.Gear(
+            id = "na_red_atonement_bell", name = "Atonement Bell",
+            cost = ducats(0), description = "Campana entregada al Crimson Communicant; canaliza el dolor del Segundo Meta-Cristo.",
+            keywords = listOf("HELD"),
+            specialRules = listOf("Channelled Sorrow: ataque de mano torpe que mueve al objetivo D3\" en vez de herir.")
+        ),
+
+        // ==================== PROCESSIONS OF THE SACRED AFFLICTION (Trench Pilgrims variant) ====================
+        Equipment.Gear(
+            id = "tp_affliction_bells_of_warding", name = "Bells of Warding",
+            cost = glory(2), description = "Campanas reunidas y tocadas por un miembro elegido, declarando la unidad de la Procesión.",
+            keywords = listOf("HELD", "LEADER"),
+            specialRules = listOf("Gathering Call: +1 DICE a las Risky Rolls de Dash de aliados a 4\" de una campana o instrumento.")
+        ),
+        Equipment.Gear(
+            id = "tp_affliction_blessed_millstone", name = "Blessed Millstone",
+            cost = ducats(5), description = "Piedra de molino consagrada cargada con las plegarias de almas penitentes.",
+            specialRules = listOf("Weighted with Sin: -1\" Movimiento y +2 INJURY DICE; puede liberarse tras eliminar a un enemigo.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "tp_affliction_great_flail", name = "Great Flail/Scourge",
+            cost = ducats(15), description = "Manguales de piedras atadas con cuerda de cáñamo, símbolo del peso del pecado.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 DICE", "+1 INJURY DICE", "CUMBERSOME", "HEAVY")
+        ),
+        Equipment.Armor(
+            id = "tp_affliction_holy_icon_armour", name = "Holy Icon Armour",
+            cost = ducats(30), description = "Armadura hecha de iconos benditos y escritura sagrada escrita con sangre de santos.",
+            armorBonus = 1, keywords = listOf("-1 INJURY MODIFIER", "IMPERVIOUS")
+        ),
+        Equipment.Gear(
+            id = "tp_affliction_penitents_phylactery", name = "Penitent's Phylactery",
+            cost = ducats(12), description = "Caja de cuero con obleas de las llagas benditas de la Sacred Affliction.",
+            specialRules = listOf("Repudiation of Sin: +1 BLOOD MARKER al atacar a HERETIC, THE COURT o BLACK GRAIL.")
+        ),
+        Equipment.Armor(
+            id = "tp_affliction_ragged_vestments", name = "Ragged Vestments",
+            cost = ducats(10), description = "Ropas andrajosas de peregrinos que desafiaron los precipicios de la Creación.",
+            specialRules = listOf("Leap of Faith: +1 DICE a Risky Rolls al Escalar, Saltar o hacer Dash sin escudo ni armas HEAVY.")
+        ),
+
+        // ==================== WAR PILGRIMAGE OF SAINT METHODIUS (Trench Pilgrims variant) ====================
+        Equipment.RangedWeapon(
+            id = "tp_methodius_autocannon", name = "Autocannon",
+            cost = ducats(55), description = "Cañón automático de gran calibre montado en un Anchorite Shrine desde el que dispara sin pausa.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(48),
+            keywords = listOf("+1 INJURY DICE", "AUTOMATIC 3", "HEAVY"),
+            specialRules = listOf("Full Auto: elige el perfil Bursts o Full Auto (+1 INJURY DICE, AUTOMATIC 5, HEAVY, RELOAD, RISKY).")
+        ),
+        Equipment.RangedWeapon(
+            id = "tp_methodius_gas_censer", name = "Gas Censer",
+            cost = ducats(50), description = "Arma química letal y objeto de veneración que libera una nube de gas indiscriminada.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(6),
+            keywords = listOf("GAS", "IGNORE ARMOUR", "RELOAD"),
+            specialRules = listOf("Cloud of Gas: golpea a todos los modelos a 6\" sin tirada de Success (aliados y enemigos).")
+        ),
+        Equipment.RangedWeapon(
+            id = "tp_methodius_trench_mortar", name = "Trench Mortar",
+            cost = ducats(40), description = "Mortero de avancarga que dispara proyectiles incendiarios y explosivos en arco.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(36),
+            keywords = listOf("+1 INJURY DICE", "BLAST 3\"", "FIRE", "HEAVY", "IGNORES COVER", "SCATTER"),
+            specialRules = listOf("High Trajectory: el objetivo no puede estar a menos de 6\" del atacante.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_gas_filters", name = "Gas Filters",
+            cost = ducats(5), description = "Sistema de incienso sagrado que purifica el aire respirado por el monje del Anchorite.",
+            keywords = listOf("NEGATE GAS")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_grand_anchorite", name = "Grand Anchorite",
+            cost = ducats(15), description = "Construye al Anchorite a un tamaño extraordinario, casi imposible de detener.",
+            specialRules = listOf("Impossible to Stop: los enemigos a 1\" no pueden atacar al retirarse; puede mover/cargar desde 1\" de enemigos.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_hallowed_anchorite", name = "Hallowed Anchorite",
+            cost = ducats(10), description = "Anchorite ungido con crisma sagrado, apto para ser promovido a ELITE.",
+            specialRules = listOf("Manifold Blessings: puede ascenderse a ELITE en la Fase de Campaña.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_holy_diesel_engine", name = "Holy Diesel Engine",
+            cost = ducats(10), description = "Motor diésel avanzado con refrigeración experimental que mejora el Dash.",
+            specialRules = listOf("Advanced Design: +2 DICE a la Risky Roll del Dash a cambio de 1 BLOOD MARKER.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_piston_legs", name = "Piston Legs",
+            cost = ducats(10), description = "Motores de pistón en los pies diseñados para triturar a los caídos.",
+            specialRules = listOf("Grind to Dust ACTION: Melee Attack contra un enemigo Down de base 32mm o menor.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_sacred_geometry", name = "Sacred Geometry",
+            cost = ducats(10), description = "Geometrías que muestran el mundo a través de las matemáticas divinas.",
+            specialRules = listOf("Divine Accuracy: +1 DICE a la característica Ranged del Anchorite.")
+        ),
+        Equipment.Gear(
+            id = "tp_methodius_wrathful_cherub_face", name = "Wrathful Cherub Face",
+            cost = ducats(20), description = "Rostro angelical que encarna la ira del Señor y hace retroceder a los enemigos.",
+            specialRules = listOf("Cower Before The Lord: los enemigos a 1\" deben hacer Retreat y no pueden hacer Risky Actions.")
+        ),
+
+        // ==================== CAVALCADE OF THE TENTH PLAGUE (Trench Pilgrims variant) ====================
+        Equipment.Gear(
+            id = "tp_plague_sacrificial_lamb", name = "Sacrificial Lamb",
+            cost = ducats(5), description = "Cordero sacrificado antes de la batalla para ungir al Peregrino con su sangre.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Anointed: ignora el primer BLOOD MARKER del portador; los Ecclesiastic Prisoners no pueden llevarlo.")
+        ),
+
+        // ==================== FIDA'I OF ALAMUT (Iron Sultanate variant) ====================
+        Equipment.RangedWeapon(
+            id = "is_fidai_bow_of_alamut", name = "Bow of Alamut",
+            cost = ducats(50), description = "Arco de doble cuerda cuyas flechas viajan por el tiempo y el espacio hasta el objetivo.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(40),
+            keywords = listOf("CRITICAL", "IGNORE ARMOUR"),
+            specialRules = listOf("Temporal Slipstream: si causa BLOOD MARKERS, redespliega al atacante a 1\" del objetivo.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "is_fidai_golden_khanjar", name = "Golden Khanjar",
+            cost = ducats(20), description = "Daga curva de veneno cristalizado entregada por el Viejo de la Montaña.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY MODIFIER"),
+            specialRules = listOf("Attack Twice: puede hacer 2 Melee Attacks seguidas con esta arma.")
+        ),
+        Equipment.Gear(
+            id = "is_fidai_hashashin_leaf", name = "Hashashin Leaf",
+            cost = ducats(5), description = "Hoja del Jardín secreto de Alamut que triplica la fuerza de quien la come.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Enhanced Strength: al desplegar, el portador gana STRONG el resto de la partida.")
+        ),
+
+        // ==================== THE HOUSE OF WISDOM (Iron Sultanate variant) ====================
+        Equipment.Gear(
+            id = "is_wisdom_elixir_of_al_khidr", name = "Elixir of Al-Khidr",
+            cost = ducats(10), description = "Fórmula alquímica elaborada con agua de la Fuente de la Vida oculta.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Fountain of Life: al desplegar, el portador gana TOUGH; no valen modelos ARTIFICIAL.")
+        ),
+        Equipment.Shield(
+            id = "is_wisdom_fire_shield", name = "Fire Shield",
+            cost = ducats(20), description = "Invención de la Escuela al-Jazari tratada para resistir el fuego.",
+            meleeDefenseBonus = 1, rangedDefenseBonus = 1, keywords = listOf("-1 INJURY MODIFIER", "NEGATE FIRE"),
+            specialRules = listOf("Fire Shield: -1 INJURY DICE extra contra ataques FIRE, incluso con IGNORE ARMOUR.")
+        ),
+
+        // ==================== HIGH CATHEDRA OF PRIDE (Court variant) ====================
+        Equipment.RangedWeapon(
+            id = "court_pride_lightbringer_rifle", name = "Lightbringer Rifle",
+            cost = ducats(40), description = "Rifle cuyas balas brillan con la luz del alba, castigando a los enemigos situados en alto.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(48),
+            keywords = listOf("CRITICAL"),
+            specialRules = listOf("Pride Comes Before the Fall: +3 DICE si el objetivo está 2\" más alto; el objetivo cae si está junto a un borde.")
+        ),
+        Equipment.Armor(
+            id = "court_pride_cloak_of_the_morningstar", name = "Cloak of the Morningstar",
+            cost = glory(3), description = "Capa angélica quemada cuando cayó el Lucero; quien la viste nunca cede terreno.",
+            armorBonus = 3, keywords = listOf("-3 INJURY MODIFIER", "INNATE"),
+            specialRules = listOf("Defiant Rebellion: no puede ser obligado a moverse; reemplaza permanentemente cualquier armadura.")
+        ),
+        Equipment.Gear(
+            id = "court_pride_glorious_light", name = "Glorious Light",
+            cost = ducats(20), description = "Luz imposiblemente brillante que hace difícil mirar al portador en batalla.",
+            specialRules = listOf("Glorious to Behold: -1 DICE a las Success Rolls de los ataques contra el portador.")
+        ),
+        Equipment.Gear(
+            id = "court_pride_petals_of_blood_roses", name = "Petals of Blood Roses",
+            cost = ducats(5), description = "Pétalos venenosos esparcidos por los Wretched mientras avanzan sus amos demoníacos.",
+            specialRules = listOf("Glorious Advance: reposiciona a un DEMONIC aliado a 3\" golpeado por BLAST.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_pride_laurels_of_the_supreme", name = "Laurels of the Supreme",
+            cost = glory(3), description = "Corona de tejas de oro arrancadas de los muros del Cielo.",
+            keywords = listOf("NEGATE SHRAPNEL"),
+            specialRules = listOf("All are Beneath Me: con línea de visión a un enemigo 2\" por debajo, coloca 1 BLESSING MARKER.")
+        ),
+
+        // ==================== GOLDEN SEAT OF GREED (Court variant) ====================
+        Equipment.RangedWeapon(
+            id = "court_greed_ring_gun", name = "40-Bore Ring Gun",
+            cost = ducats(25), description = "Escopeta de doble cañón que dispara una lluvia tintineante de posta de ducados.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Ranged(12),
+            keywords = listOf("+1 DICE", "AUTOMATIC 2", "SHOTGUN", "SHRAPNEL"),
+            specialRules = listOf("Coin Song: si los dos ataques del Shoot son Success, coloca 1 BLESSING MARKER.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_greed_herodic_hammer", name = "Herodic Hammer",
+            cost = ducats(15), description = "Martillo forjado con la orfebrería saqueada de monarcas caídos.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY MODIFIER", "CUMBERSOME", "HEAVY"),
+            specialRules = listOf("Beneath Me: +1 INJURY DICE contra modelos de menor coste.", "Press Down: segundo ataque contra enemigos no ELITE de base 32mm o menor.")
+        ),
+        Equipment.Gear(
+            id = "court_greed_queens_bones", name = "Queen's Bones",
+            cost = ducats(5), description = "Restos grotescamente modificados de actuarios Wretched de Mammon.",
+            specialRules = listOf("Indentured Computation: +1 DICE a los ataques de aliados a 1\" contra modelos por encima del umbral.")
+        ),
+        Equipment.Gear(
+            id = "court_greed_stolen_sentimentality", name = "Stolen Sentimentality",
+            cost = ducats(12), description = "Pequeñas jaulas y frascos de recuerdos robados a los muertos.",
+            keywords = listOf("-1 INJURY MODIFIER", "CONSUMABLE"),
+            specialRules = listOf("Kill Your Darlings: los ataques con IGNORE ARMOUR ignoran esta protección.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_greed_esaus_bargain", name = "Esau's Bargain",
+            cost = glory(5), description = "Contrato infernal del Banco de Mammon cosido en la corona del portador.",
+            specialRules = listOf("Of the Field: duplica los PX ganados.", "Mnemoharvest: trata un resultado de Trauma como Full Recovery a cambio de perder 1 Skill.")
+        ),
+
+        // ==================== FLESH DIVAN OF LUST (Court variant) ====================
+        Equipment.Gear(
+            id = "court_lust_altar_of_torment", name = "Altar of Torment",
+            cost = ducats(60), description = "Versión de la Corte del Altar de Tormento, colocada como equipo del Flesh Divan.",
+            specialRules = listOf("Usa las reglas estándar del Altar of Torment del Glory Item Cartulary.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_lust_astragaloi", name = "Astrágaloi",
+            cost = glory(2), description = "Dados de juego hechos de huesos, escombros o llagas benditas calcificadas.",
+            specialRules = listOf("Tempt Fate ACTION: apuesta contra el destino de un enemigo a 6\" con 2D6.")
+        ),
+        Equipment.Gear(
+            id = "court_lust_horn_of_luxuria", name = "Horn of Luxuria",
+            cost = ducats(30), description = "Instrumento flautado del reino de la Lujuria; su música agudiza la sensibilidad de los mortales.",
+            specialRules = listOf("Black Serenade: gasta 1 SIN MARKER para +1 DICE al Dash aliado.", "Rapt in Pleasure: los enemigos Down a 4\" deben tirar para levantarse.")
+        ),
+        Equipment.DualPurposeWeapon(
+            id = "court_lust_lance_of_asmoday", name = "Lance of Asmoday",
+            cost = ducats(30), description = "Finas espinas de ónice modeladas según la lanza-estandarte de la Cabeza de la Lujuria.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.DualPurpose(18),
+            keywords = listOf("+1 DICE", "CUMBERSOME", "IGNORE LONG RANGE"),
+            specialRules = listOf("Yours to Take: mueve al objetivo D6\" hacia el atacante.", "New Sensations: un Crítico derriba a los enemigos a 2\".")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_lust_naamahrite_scourge", name = "Naamahrite Scourge",
+            cost = ducats(20), description = "Látigo que apela al ansia de la víctima por ser dominada.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY MODIFIER", "SHRAPNEL", "RISKY"),
+            specialRules = listOf("As the Tyrant Made Us: el objetivo puede aceptar más daño para negar un SIN MARKER al atacante.")
+        ),
+        Equipment.Gear(
+            id = "court_lust_spoils_of_lust", name = "Spoils of Lust",
+            cost = ducats(5), description = "Corsés de hierro con púas y arneses ganchudos llevados por los Wretched sádicos.",
+            specialRules = listOf("Distressing Presence: coloca 1 BLOOD MARKER en un enemigo que se active a 1\".")
+        ),
+
+        // ==================== BLACK KLISMOS OF ENVY (Court variant) ====================
+        Equipment.Gear(
+            id = "court_envy_brand_of_moloch", name = "Brand of Moloch",
+            cost = ducats(10), description = "La marca de Moloch, el Rey Infanticida; sacrifica un Wretched para lanzar hechicería gratis.",
+            specialRules = listOf("Infanticide ACTION: elimina un Wretched a 1\" para lanzar el siguiente Goetic Spell sin coste.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_envy_craven_vassalage", name = "Craven Vassalage",
+            cost = glory(5), description = "Juramento de lealtad a Moloch o Leviatán que remodela a un Hell Knight.",
+            keywords = listOf("INNATE"),
+            specialRules = listOf("Agent of Change: elige Beacon of Corruption o Burning Inferno; también FLYING 6\" y base 50mm.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_envy_lying_knife", name = "Lying Knife",
+            cost = ducats(12), description = "Hoja de piedra poseída por el deseo transformador de la Envidia.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY MODIFIER", "RISKY"),
+            specialRules = listOf("Mercurial Blade: copia un Keyword del arma de melee del objetivo para el ataque.")
+        ),
+        Equipment.Shield(
+            id = "court_envy_pyrite_mirror_pavise", name = "Pyrite Mirror Pavise",
+            cost = ducats(30), description = "Losa de hierro infernal cubierta de runas y pirita.",
+            meleeDefenseBonus = 1, rangedDefenseBonus = 1, keywords = listOf("-1 INJURY MODIFIER"),
+            specialRules = listOf("Mocking Reflection ACTION: copia una ACTION de un enemigo a 1\".")
+        ),
+        Equipment.Gear(
+            id = "court_envy_usurpers_saw_wire", name = "Usurper's Saw-Wire",
+            cost = ducats(10), description = "Alambre sierra para decapitar a quienes 'no merecen' su estatus.",
+            specialRules = listOf("De-Coronate ACTION: +2 INJURY DICE contra ELITE o bases mayores.", "Bitterly Unsatisfying: 2 SIN MARKERS si elimina al objetivo.")
+        ),
+
+        // ==================== HUNGERING THRONE OF GLUTTONY (Court variant) ====================
+        Equipment.Gear(
+            id = "court_gluttony_jawed_bascinet", name = "Jawed Bascinet",
+            cost = ducats(20), description = "Yelmo voraz con mandíbulas de dientes pulidos que desgarran y sanan al portador.",
+            keywords = listOf("NEGATE SHRAPNEL"),
+            specialRules = listOf("Ravening Jaws: gana REGENERATE 3 mientras esté a 1\" de cualquier enemigo.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_gluttony_lanx_ciborum", name = "Lanx Ciborum Exquisitorum",
+            cost = glory(8), description = "Vasija que se rellena sin fin con delicias de Baal; atrae a los mortales cercanos.",
+            keywords = listOf("HELD", "REGENERATE 6"),
+            specialRules = listOf("Irresistible Delights: los enemigos a 8\" hacen Risky Rolls y son empujados 3\" hacia ella.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_gluttony_meaty_cleaver", name = "Meaty Cleaver",
+            cost = ducats(25), description = "Cuchilla de carnicero enorme y mellada que arranca trozos de carne con facilidad sobrehumana.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY DICE", "CLEAVE 2", "CRITICAL", "CUMBERSOME", "HEAVY")
+        ),
+        Equipment.Gear(
+            id = "court_gluttony_ostentatious_ornamentation", name = "Ostentatious Ornamentation",
+            cost = ducats(15), description = "Tocado escandaloso del líder; el suelo mismo cede ante sus excesos.",
+            specialRules = listOf("Part a Path: el terreno en contacto (hasta 8\"x8\") es Difficult para enemigos y Open para aliados.")
+        ),
+        Equipment.Gear(
+            id = "court_gluttony_tawdry_finery", name = "Tawdry Finery",
+            cost = ducats(45), description = "Alarde de joyas falsas y pieles robadas que atrae la atención y protege a los cercanos.",
+            specialRules = listOf("Most Conspicuous: cuenta con el mayor coste para Conspicuous Consumption; -1 DICE a Ranged contra aliados a 3\".")
+        ),
+
+        // ==================== IRON CURULE OF WRATH (Court variant) ====================
+        Equipment.Gear(
+            id = "court_wrath_apollyons_ember", name = "Apollyon's Ember",
+            cost = ducats(10), description = "Brasa permanente del dominio de Apollyon; los ataques de melee del portador arden.",
+            keywords = listOf("FIRE"),
+            specialRules = listOf("Undying Fire: añade el keyword FIRE a todos los ataques de melee.")
+        ),
+        Equipment.Gear(
+            id = "court_wrath_lesser_mark_of_cain", name = "Lesser Mark of Cain",
+            cost = ducats(25), description = "Copia inferior de la marca de Caín, el Primer Asesino.",
+            specialRules = listOf("Murderer: el portador tiene el keyword -1 INJURY DICE.")
+        ),
+        Equipment.Gear(
+            id = "court_wrath_locust_gait", name = "Locust Gait",
+            cost = ducats(10), description = "Imitando el movimiento de las Pit Locusts, el Hell Knight de Ira obtiene vuelo.",
+            keywords = listOf("FLYING"),
+            specialRules = listOf("Imitation Flight: cambia el movimiento a 6\"/Flying.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_wrath_ruinous_pernach", name = "Ruinous Pernach",
+            cost = ducats(15), description = "Maza nudosa con runas de odio y ruina en sus flanges afilados.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+1 INJURY MODIFIER", "HEAVY"),
+            specialRules = listOf("Crushed Plate: tras un primer ataque con ella, los siguientes contra el mismo objetivo ganan ARMOUR PIERCING.")
+        ),
+        Equipment.MeleeWeapon(
+            id = "court_wrath_spear_of_apollyon", name = "Spear of Apollyon",
+            cost = glory(6), description = "Arma de asta monstruosa de hierro aún candente, templada en sangre de los Caídos.",
+            type = BattlekitType.TWO_HANDED, range = WeaponRange.Melee,
+            keywords = listOf("+2 INJURY DICE", "BLOCK", "CUMBERSOME", "FIRE"),
+            specialRules = listOf("Rend the World ACTION: traza una línea de 12\" y reparte BLOOD MARKERS gastando SIN MARKERS.")
+        ),
+
+        // ==================== SILK BED OF SLOTH (Court variant) ====================
+        Equipment.DualPurposeWeapon(
+            id = "court_sloth_desidian_matchlock", name = "Desidian Matchlock",
+            cost = ducats(10), description = "Invención de Belphegor que prescinde de la necesidad de entrenamiento.",
+            type = BattlekitType.ONE_HANDED, range = WeaponRange.DualPurpose(12),
+            keywords = listOf("PISTOL"),
+            specialRules = listOf("Half-Cocked: +1 INJURY MODIFIER si el objetivo ya se activó este Turno.")
+        ),
+        Equipment.Gear(
+            id = "court_sloth_flower_of_lytos", name = "Flower of Lytos",
+            cost = ducats(15), description = "Opioide espiritual cultivado en suelo bañado en sangre.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Lotus Eater: al cargar, el objetivo es forzado a cargar hacia el portador.")
+        ),
+        Equipment.SpecialItem(
+            id = "court_sloth_iscariots_rope", name = "Iscariot's Rope",
+            cost = glory(4), description = "Trozo de la cuerda que Judas usó para quitarse la vida.",
+            keywords = listOf("CONSUMABLE"),
+            specialRules = listOf("Unsummon: el portador se elimina como Full Recovery en el Trauma Step.")
+        ),
+        Equipment.Gear(
+            id = "court_sloth_shroud_of_balak", name = "Shroud of Balak",
+            cost = ducats(50), description = "Pesadas ropas tejidas con el cabello y la médula del cadáver consciente del rey Balak.",
+            keywords = listOf("TOUGH"),
+            specialRules = listOf("Weltschmerz Weave: no puede hacer Dash; puede lanzar dos veces el mismo Goetic Spell pagando su coste cada vez.")
         )
     )
 }

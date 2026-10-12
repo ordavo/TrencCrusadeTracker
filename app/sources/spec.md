@@ -36,6 +36,12 @@ Lo usaran jugadores de Trench Crusade, que son personas que juegan el juego de m
 - No se pude tener dos warbands iguales en la misma campaña, ademas de que no se puede tener dos jugadores con el mismo nombre en la misma campaña, ademas de que no se puede tener dos jugadores con la misma faccion en la misma campaña, ademas de que no se puede tener dos jugadores con la misma warband en la misma campaña, ademas de que no se puede tener dos jugadores con la misma warband y faccion en la misma campaña, ademas de que no se puede tener dos jugadores con la misma warband y faccion y nombre en la misma campaña.
 - En torneo una vez se haya iniciado la ronda ningun jugador podra editar su warband hasta que se termine el torneo y se hayan concluido todas las rondas del torneo y se revele el ganador de este
 
+## Registro de informes (carpeta `informes/`)
+- Todos los informes de cambios/sesiones se guardan en la carpeta `informes/` ubicada en la raíz del proyecto (por encima de las demás carpetas), para tener trazabilidad de lo que pasó.
+- Convención de nombre: `INFORME_<AAAA-MM-DD>_<tema>.md` (p. ej. `INFORME_2026-10-12_ARMERIAS_VARIANTES.md`).
+- Cada informe documenta: objetivo, archivos modificados, detalle de lo añadido, decisiones/limitaciones, verificación y pendientes.
+- `MEMORY.md` sigue siendo el changelog resumido; los informes son el detalle extendido de cada sesión.
+
 ## Fuera de alcance
 <Lo que explícitamente NO se hace en esta iteración.>
 

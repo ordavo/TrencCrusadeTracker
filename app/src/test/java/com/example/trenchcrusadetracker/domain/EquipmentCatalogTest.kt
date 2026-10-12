@@ -17,7 +17,7 @@ class EquipmentCatalogTest {
 
     private val baseFactions = listOf(
         "new_antioch", "trench_pilgrims", "iron_sultanate",
-        "heretic_legions", "black_grail", "the_court"
+        "heretic_legion", "black_grail", "the_court"
     )
 
     @Test
@@ -39,6 +39,10 @@ class EquipmentCatalogTest {
         assertNotNull(repository.getEquipmentById("hl_blasphemous_staff"))
         assertNotNull(repository.getEquipmentById("bg_corruption_belcher"))
         assertNotNull(repository.getEquipmentById("court_serpent_assault_gun"))
+
+        // Great Hunger
+        assertNotNull(repository.getEquipmentById("gh_vomitus"))
+        assertNotNull(repository.getEquipmentById("gh_black_spot_rifle"))
     }
 
     @Test
@@ -80,22 +84,25 @@ class EquipmentCatalogTest {
         assertTrue(trooperItems.all { it.cost.gloryAmount() == 0 })
     }
 
+    private val variantArmories = listOf(
+        "black_grail_great_hunger", "black_grail_dirge",
+        "heretic_trench_ghosts", "heretic_knights_of_avarice", "heretic_naval_raiders",
+        "antioch_papal_states", "antioch_eire_rangers", "antioch_alba",
+        "antioch_prussia", "antioch_abyssinia", "antioch_red_brigade",
+        "pilgrim_sacred_affliction", "pilgrim_methodius", "pilgrim_tenth_plague",
+        "sultanate_fidai", "sultanate_house_of_wisdom",
+        "court_pride", "court_greed", "court_lust", "court_envy",
+        "court_gluttony", "court_wrath", "court_sloth"
+    )
+
     @Test
     fun `faction armories exist for the six base factions plus variant armories`() {
         assertTrue(FactionArmories.byFactionId.keys.containsAll(baseFactions))
-        assertTrue(FactionArmories.byFactionId.containsKey("black_grail_great_hunger"))
-        assertTrue(FactionArmories.byFactionId.containsKey("black_grail_dirge"))
-        assertTrue(FactionArmories.byFactionId.containsKey("heretic_trench_ghosts"))
-        assertTrue(FactionArmories.byFactionId.containsKey("heretic_knights_of_avarice"))
-        assertTrue(FactionArmories.byFactionId.containsKey("heretic_naval_raiders"))
+        assertTrue(FactionArmories.byFactionId.keys.containsAll(variantArmories))
     }
 
     @Test
     fun `variant armories resolve to valid master profiles`() {
-        val variantArmories = listOf(
-            "black_grail_great_hunger", "black_grail_dirge",
-            "heretic_trench_ghosts", "heretic_knights_of_avarice", "heretic_naval_raiders"
-        )
         variantArmories.forEach { armoryId ->
             val provider = FactionArmoryRegistry.forFaction(armoryId, repository)
             val items = provider.getAvailableEquipment()
