@@ -94,8 +94,11 @@ fun WarbandCreationScreen(
         factionRepository.getProviderByFactionId(selectedFactionId)
             ?: error("No se encontró un proveedor para la facción '$selectedFactionId'")
     }
-    val armoryProvider = remember(selectedFactionId) {
-        FactionArmoryRegistry.forFaction(selectedFactionId, masterEquipmentRepository)
+    val armoryProvider = remember(selectedFactionId, selectedVariantId) {
+        val armoryKey = factionProvider.faction.variants
+            .find { it.id == selectedVariantId }?.armoryId
+            ?: selectedFactionId
+        FactionArmoryRegistry.forFaction(armoryKey, masterEquipmentRepository)
     }
 
     var warbandName by remember { mutableStateOf("") }
@@ -336,7 +339,9 @@ fun WarbandCreationScreen(
     // Diálogo para Agregar Unidad
     if (showAddUnitDialog) {
         AddUnitDialog(
-            availableUnits = factionProvider.getAvailableUnits().filter { it.role == roles[selectedTabRole].first },
+            availableUnits = (activeVariant?.units?.takeIf { it.isNotEmpty() }
+                ?: factionProvider.getAvailableUnits())
+                .filter { it.role == roles[selectedTabRole].first },
             onUnitSelected = { unitTemplate ->
                 val newId = "m_${System.currentTimeMillis()}"
                 val newMember = when (unitTemplate) {
